@@ -1,0 +1,19 @@
+[Info]
+name="Raziel"
+displayname="Raziel"
+versiondate=17/02/2026
+mugenversion=
+author="Mugens World"
+pal.defaults=1,
+[Files]
+sprite=raziel.sff
+sound=raziel.snd
+anim=raziel.air
+cmd=raziel.cmd
+cns=raziel.cns
+st=raziel.cns
+stcommon=raziel.cns
+pal1=raziel.act
+[Arcade]
+intro.storyboard=
+ending.storyboard=
