@@ -14,6 +14,7 @@ cns=raziel.cns
 st=raziel.cns
 stcommon=raziel.cns
 pal1=raziel.act
+pal2=raziel2.act
 [Arcade]
 intro.storyboard=
 ending.storyboard=
