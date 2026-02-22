@@ -20,5 +20,5 @@ pal1=palette/raziel.act
 pal2=palette/raziel2.act
 
 [Arcade]
-intro.storyboard=
+intro.storyboard=assets/storyboards/intro/intro.def
 ending.storyboard=
