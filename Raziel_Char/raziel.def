@@ -2,7 +2,7 @@
 name="Raziel"
 displayname="Raziel"
 versiondate=17/02/2026
-mugenversion=
+mugenversion=1.0
 author="Mugens World"
 pal.defaults=1,2
 
@@ -12,12 +12,12 @@ sound=assets/raziel.snd
 anim=assets/raziel.air
 
 cmd=logic/raziel.cmd
-cns=logic/raziel.cns
-st=logic/raziel.cns
-stcommon=logic/raziel.cns
-
+cns=logic/raziel_core.cns
+st=logic/raziel_core.cns
+stcommon=logic/raziel_core.cns
 pal1=palette/raziel.act
 pal2=palette/raziel2.act
+
 
 [Arcade]
 intro.storyboard=assets/storyboards/intro/intro.def
