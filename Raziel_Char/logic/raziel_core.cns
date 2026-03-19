@@ -747,8 +747,13 @@ value = 5100 ;Hit ground
 
 [Statedef -2]
 
-[State -2, Reaver]
+;========================
+; REAVER PALETA 1
+;========================
+[State -2, Reaver P1]
 type = Explod
+triggerall = Anim = 0
+triggerall = PalNo = 1
 trigger1 = NumExplod(7000) = 0
 ID = 7000
 anim = 7000
@@ -759,6 +764,36 @@ removetime = -1
 sprpriority = 4
 scale = 0.20,0.20
 ownpal = 1
+
+[State -2, Remove Reaver P1]
+type = RemoveExplod
+trigger1 = Anim != 0
+trigger2 = PalNo != 1
+ID = 7000
+
+;========================
+; REAVER PALETA 2
+;========================
+[State -2, Reaver P2]
+type = Explod
+triggerall = Anim = 0
+triggerall = PalNo = 2
+trigger1 = NumExplod(7100) = 0
+ID = 7100
+anim = 7100
+postype = p1
+pos = -60,-22
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove Reaver P2]
+type = RemoveExplod
+trigger1 = Anim != 0
+trigger2 = PalNo != 2
+ID = 7100
 
 ;---------------------------------------------------------------------------
 ; States that are executed when in self's state file (use statedef -3)

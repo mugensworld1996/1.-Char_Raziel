@@ -14,9 +14,10 @@ anim=assets/raziel.air
 cmd=logic/raziel.cmd
 cns=logic/raziel_core.cns
 st=logic/raziel_core.cns
-stcommon=logic/raziel_core.cns
+stcommon=common1.cns
 pal1=palette/raziel.act
 pal2=palette/raziel2.act
+pal3=palette/raziel3.act
 
 
 [Arcade]
