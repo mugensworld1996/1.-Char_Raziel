@@ -40,11 +40,11 @@ shadowoffset = 0		;Number of pixels to vertically offset the shadow
 draw.offset = 0,0		;Player drawing offset in pixels (x, y)
 
 [Velocity]
-walk.fwd  = 2.4		;Walk forward
+walk.fwd  = 2.2		;Walk forward
 walk.back = -2.2		;Walk backward
 run.fwd  = 4.6, 0		;Run forward (x, y)
 run.back = -4.5,-3.8	;Hop backward (x, y)
-jump.neu = 0,-8.4		;Neutral jumping velocity (x, y)
+jump.neu = 0,-10		;Neutral jumping velocity (x, y)
 jump.back = -2.55		;Jump back Speed (x, y)
 jump.fwd = 2.5		;Jump forward Speed (x, y)
 runjump.back = -2.55,-8.1;Running jump speeds (opt)
@@ -758,7 +758,7 @@ trigger1 = NumExplod(7000) = 0
 ID = 7000
 anim = 7000
 postype = p1
-pos = -60,-22
+pos = -58,-23
 bindtime = -1
 removetime = -1
 sprpriority = 4
@@ -782,7 +782,7 @@ trigger1 = NumExplod(7100) = 0
 ID = 7100
 anim = 7100
 postype = p1
-pos = -60,-22
+pos = -58,-23
 bindtime = -1
 removetime = -1
 sprpriority = 4
@@ -794,6 +794,55 @@ type = RemoveExplod
 trigger1 = Anim != 0
 trigger2 = PalNo != 2
 ID = 7100
+
+;========================
+; REAVER CAMINANDO PALETA 1
+;========================
+[State -2, Reaver Walk P1]
+type = Explod
+triggerall = (StateNo = 20 || StateNo = 21)
+triggerall = PalNo = 1
+trigger1 = NumExplod(7001) = 0
+ID = 7001
+anim = 7000 ; <-- tu nueva anim caminando
+postype = p1
+pos = -48,-23 ; <-- AJUSTA ESTO
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove Reaver Walk P1]
+type = RemoveExplod
+trigger1 = !(StateNo = 20 || StateNo = 21)
+trigger2 = PalNo != 1
+ID = 7001
+
+
+;========================
+; REAVER CAMINANDO PALETA 2
+;========================
+[State -2, Reaver Walk P2]
+type = Explod
+triggerall = (StateNo = 20 || StateNo = 21)
+triggerall = PalNo = 2
+trigger1 = NumExplod(7101) = 0
+ID = 7101
+anim = 7100 ; <-- tu nueva anim caminando
+postype = p1
+pos = -50,-25 ; <-- AJUSTA ESTO
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove Reaver Walk P2]
+type = RemoveExplod
+trigger1 = !(StateNo = 20 || StateNo = 21)
+trigger2 = PalNo != 2
+ID = 7101
 
 ;---------------------------------------------------------------------------
 ; States that are executed when in self's state file (use statedef -3)
