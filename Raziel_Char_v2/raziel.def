@@ -16,7 +16,7 @@ cns=logic/raziel_core.cns
 st=logic/raziel_core.cns
 stcommon=common1.cns
 pal1=palette/Raziel.act
-
+pal2=palette/Raziel2.act
 
 [Arcade]
 intro.storyboard=assets/storyboards/intro/intro.def
