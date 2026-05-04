@@ -806,7 +806,7 @@ trigger1 = NumExplod(7001) = 0
 ID = 7001
 anim = 7000 ; <-- tu nueva anim caminando
 postype = p1
-pos = -48,-23 ; <-- AJUSTA ESTO
+pos = -51,-29
 bindtime = -1
 removetime = -1
 sprpriority = 4
@@ -831,7 +831,7 @@ trigger1 = NumExplod(7101) = 0
 ID = 7101
 anim = 7100 ; <-- tu nueva anim caminando
 postype = p1
-pos = -50,-25 ; <-- AJUSTA ESTO
+pos = -51,-29
 bindtime = -1
 removetime = -1
 sprpriority = 4
