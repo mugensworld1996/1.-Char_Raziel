@@ -1,6 +1,6 @@
 # Raziel (Legacy of Kain)
 
-![Raziel](Sprites v 2.0/main.jpg)
+![Raziel](Sprites_v2.0/main.png)
 
 ---
 
@@ -55,7 +55,7 @@ Este proceso permite generar animaciones completamente nuevas para el personaje.
 
 Parte del código utilizado para este proyecto proviene de un personaje jugable previo en 2D que me fue proporcionado por:
 
-- **Raziel Seylos**
+- **Dark**
 - **Dave Rattlz**
 
 Ese personaje ya era jugable, pero aún faltaban implementar varias funcionalidades y más variantes del **Soul Reaver**.
