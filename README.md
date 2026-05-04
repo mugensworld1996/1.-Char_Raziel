@@ -1,6 +1,6 @@
 # Raziel (Legacy of Kain)
 
-![Raziel](Sprites v 2.0/main.jpg)
+![Raziel](Sprites_v2.0/main.png)
 
 ---
 
