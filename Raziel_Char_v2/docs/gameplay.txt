@@ -1,0 +1,178 @@
+# Raziel — Gameplay Guide
+
+## Información general
+
+- Personaje: Raziel
+- Juego de origen: Legacy of Kain: Soul Reaver
+- Engine: MUGEN 1.0
+- Estado: En desarrollo
+
+---
+
+# Controles básicos
+
+## Layout estándar MUGEN
+
+```txt
+x  y  z
+a  b  c
+      s
+```
+
+| Botón | Acción |
+|---|---|
+| x | Golpe débil |
+| y | Golpe medio |
+| z | Golpe fuerte |
+| a | Patada débil |
+| b | Patada media |
+| c | Patada fuerte |
+| s | Taunt |
+
+---
+
+# Movimiento
+
+| Acción | Input |
+|---|---|
+| Caminar | ← / → |
+| Saltar | ↑ |
+| Dash adelante | → → |
+| Dash atrás | ← ← |
+| Air Jump | En el aire + ↑ |
+
+---
+
+# Taunt
+
+| Acción | Input |
+|---|---|
+| Taunt | s |
+
+---
+
+# Throws
+
+| Acción | Input |
+|---|---|
+| Throw | Cerca del enemigo + →/← + y o z |
+
+---
+
+# Normales de pie
+
+| Movimiento | Input |
+|---|---|
+| Light Punch | x |
+| Medium Punch | y |
+| Heavy Punch | z |
+| Light Kick | a |
+| Medium Kick | b |
+| Heavy Kick | c |
+
+---
+
+# Normales agachado
+
+| Movimiento | Input |
+|---|---|
+| Crouch Light Punch | ↓ + x |
+| Crouch Medium Punch | ↓ + y |
+| Crouch Heavy Punch | ↓ + z |
+| Crouch Light Kick | ↓ + a |
+| Crouch Medium Kick | ↓ + b |
+| Crouch Heavy Kick | ↓ + c |
+
+---
+
+# Normales aéreas
+
+| Movimiento | Input |
+|---|---|
+| Jump Light Punch | Aire + x |
+| Jump Medium Punch | Aire + y |
+| Jump Heavy Punch | Aire + z |
+| Jump Light Kick | Aire + a |
+| Jump Medium Kick | Aire + b |
+| Jump Heavy Kick | Aire + c |
+
+---
+
+# Sistema Soul Reaver
+
+El Soul Reaver es un sistema visual persistente implementado mediante overlays y palettes independientes.
+
+Actualmente:
+
+- Se muestra en idle
+- Walk
+- Crouch
+- Transiciones de crouch
+
+Cada palette puede utilizar una variante distinta del Reaver.
+
+---
+
+# Palettes disponibles
+
+| Palette | Archivo |
+|---|---|
+| Palette 1 | raziel.act |
+| Palette 2 | raziel2.act |
+| Palette 3 | raziel3.act |
+
+---
+
+# Estado actual del gameplay
+
+Actualmente el personaje posee:
+
+- Normales de pie
+- Normales agachado
+- Normales aéreos
+- Throws
+- Dash
+- Air jump
+- Taunt
+- Sistema visual Soul Reaver
+
+---
+
+# Contenido pendiente
+
+Aún faltan:
+
+- Special moves
+- Supers
+- IA
+- Más movilidad
+- Más Reavers
+- FX avanzados
+- Balance general
+
+---
+
+# Compatibilidad
+
+Este personaje fue diseñado específicamente para:
+
+- MUGEN 1.0
+
+No se garantiza funcionamiento correcto en:
+
+- WinMUGEN
+- MUGEN 1.1
+
+---
+
+# Instalación
+
+1. Copiar `Raziel_Char/` dentro de `chars/`
+2. Abrir `data/select.def`
+3. Agregar:
+
+```txt
+Raziel_Char/raziel
+```
+
+4. Iniciar MUGEN y seleccionar el personaje.
