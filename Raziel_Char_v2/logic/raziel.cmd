@@ -482,6 +482,45 @@ time = 1
 ;===========================================================================
 ;---------------------------------------------------------------------------
 
+;==================================================
+; COMBOS
+;==================================================
+
+[State -1, Combo 2A]
+type = ChangeState
+value = 265
+triggerall = stateno = 200
+triggerall = movecontact
+trigger1 = command = "x"
+
+[State -1, Combo 2D]
+type = ChangeState
+value = 255
+triggerall = stateno = 230
+triggerall = movecontact
+trigger1 = command = "a"
+
+[State -1, Combo 3D]
+type = ChangeState
+value = 260
+triggerall = stateno = 255
+triggerall = movecontact
+trigger1 = command = "a"
+
+[State -1, Combo 2E]
+type = ChangeState
+value = 270
+triggerall = stateno = 240
+triggerall = movecontact
+trigger1 = command = "b"
+
+[State -1, Combo 3E]
+type = ChangeState
+value = 275
+triggerall = stateno = 270
+triggerall = movecontact
+trigger1 = command = "b"
+
 ;===========================================================================
 ;---------------------------------------------------------------------------
 ; Run Fwd
@@ -528,6 +567,61 @@ value = 195
 triggerall = command = "s"
 trigger1 = statetype != A
 trigger1 = ctrl
+
+;=========================
+; 1A -> 2A
+;=========================
+
+[State -1, Combo 2A]
+type = ChangeState
+value = 265
+triggerall = stateno = 200
+triggerall = movecontact
+trigger1 = command = "x"
+
+;=========================
+; 1D -> 2D
+;=========================
+
+[State -1, Combo 2D]
+type = ChangeState
+value = 255
+triggerall = stateno = 230
+triggerall = movecontact
+trigger1 = command = "a"
+
+;=========================
+; 2D -> 3D
+;=========================
+
+[State -1, Combo 3D]
+type = ChangeState
+value = 260
+triggerall = stateno = 255
+triggerall = movecontact
+trigger1 = command = "a"
+
+;=========================
+; 1E -> 2E
+;=========================
+
+[State -1, Combo 2E]
+type = ChangeState
+value = 270
+triggerall = stateno = 240
+triggerall = movecontact
+trigger1 = command = "b"
+
+;=========================
+; 2E -> 3E
+;=========================
+
+[State -1, Combo 3E]
+type = ChangeState
+value = 275
+triggerall = stateno = 270
+triggerall = movecontact
+trigger1 = command = "b"
 
 ;---------------------------------------------------------------------------
 ; Stand Light Punch

@@ -172,7 +172,7 @@ sprpriority = 2			;Set layering priority to 2 (in front)
 
 [State 200, 1]
 type = HitDef
-trigger1 = Time = 0
+trigger1 = Time = 5
 attr = S, NA			;Attribute: Standing, Normal Attack
 damage = 23, 0			;Damage that move inflicts, guard damage
 animtype = Light			;Animation type: Light, Medium, Heavy, Back (def: Light)
@@ -221,6 +221,21 @@ trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
 
+[State 210, Hit]
+type = HitDef
+trigger1 = Time = 2
+
+attr = S, NA
+damage = 40
+
+ground.type = High
+ground.velocity = -2
+
+air.type = High
+air.velocity = -2,-8
+
+fall = 1
+
 ;---------------------------------------------------------------------------
 ; Standing Strong Punch
 ; CNS difficulty: easy
@@ -239,6 +254,19 @@ type = ChangeState
 trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
+
+[State 220, Hit]
+type = HitDef
+trigger1 = Time = 4
+
+attr = S, NA
+damage = 45
+
+ground.type = Trip
+ground.velocity = -5
+
+fall = 1
+fall.recover = 0
 
 ;---------------------------------------------------------------------------
 ; Standing Light Kick
@@ -259,6 +287,23 @@ trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
 
+[State 230, Hit]
+type = HitDef
+trigger1 = Time = 7
+
+attr = S, NA
+damage = 30
+
+guardflag = MA
+hitflag = MAF
+
+priority = 4, Hit
+
+ground.type = High
+ground.velocity = -4
+
+air.velocity = -2,-3
+
 ;---------------------------------------------------------------------------
 ; Standing Medium Kick
 ; CNS difficulty: easy
@@ -278,6 +323,23 @@ trigger1 = AnimTime = 0
 value = 0
 ctrl = 1
 
+[State 240, Hit]
+type = HitDef
+trigger1 = Time = 4
+
+attr = S, NA
+damage = 35
+
+guardflag = MA
+hitflag = MAF
+
+priority = 4, Hit
+
+ground.type = High
+ground.velocity = -5
+
+air.velocity = -3,-4
+
 ;---------------------------------------------------------------------------
 ; Standing Strong Kick
 ; CNS difficulty: easy
@@ -292,6 +354,181 @@ velset = 0,0
 anim = 250
 
 [State 250, 5]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+;==================================================
+; 2D
+;==================================================
+[Statedef 255]
+type = S
+movetype = A
+physics = S
+anim = 255
+ctrl = 0
+
+[State 255, Hit]
+type = HitDef
+trigger1 = Time = 5
+
+attr = S, NA
+damage = 40
+
+guardflag = MA
+hitflag = MAF
+
+ground.type = High
+ground.velocity = -5
+ground.hittime = 15
+
+air.velocity = -3,-3
+
+sparkno = 2
+
+[State 255, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+;==================================================
+; 3D
+;==================================================
+[Statedef 260]
+type = S
+movetype = A
+physics = N
+anim = 260
+ctrl = 0
+
+[State 260, Slide]
+type = VelSet
+trigger1 = Time = 0
+x = 12
+
+[State 260, Friction]
+type = VelMul
+trigger1 = Time > 0
+x = .96
+
+[State 260, Hit]
+type = HitDef
+trigger1 = Time = 4
+
+attr = S, NA
+damage = 70
+
+guardflag = MA
+hitflag = MAF
+
+priority = 5, Hit
+
+ground.type = Trip
+ground.velocity = -12
+
+air.velocity = -8,-5
+
+fall = 1
+
+[State 260, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+;==================================================
+; 2A
+;==================================================
+[Statedef 265]
+type = S
+movetype = A
+physics = S
+anim = 265
+ctrl = 0
+
+[State 265, Hit]
+type = HitDef
+trigger1 = Time = 7
+
+attr = S, NA
+damage = 35
+
+ground.type = High
+ground.velocity = -1
+ground.hittime = 30
+ground.slidetime = 25
+
+air.velocity = -1,-2
+
+pausetime = 10,15
+
+sparkno = 2
+
+[State 265, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+;==================================================
+; 2E
+;==================================================
+[Statedef 270]
+type = S
+movetype = A
+physics = S
+anim = 270
+ctrl = 0
+
+[State 270, Hit]
+type = HitDef
+trigger1 = Time = 5
+
+attr = S, NA
+damage = 40
+
+ground.type = High
+ground.velocity = -3
+
+air.velocity = -3,-2
+
+sparkno = 2
+
+[State 270, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+[Statedef 275]
+type = S
+movetype = A
+physics = N
+anim = 275
+
+[State 275, Forward]
+type = VelSet
+trigger1 = Time = 0
+x = 5
+
+[State 275, Hit]
+type = HitDef
+trigger1 = Time = 3
+
+attr = S, NA
+damage = 60
+
+guardflag = MA
+hitflag = MAF
+
+ground.velocity = -14
+air.velocity = -10,-5
+
+fall = 1
+
+[State 275, End]
 type = ChangeState
 trigger1 = AnimTime = 0
 value = 0
