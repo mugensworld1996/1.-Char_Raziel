@@ -215,6 +215,25 @@ ctrl = 0
 velset = 0,0
 anim = 210
 
+[State 210, FX]
+type = Explod
+trigger1 = Time = 2
+
+anim = 6000
+ID = 6000
+
+pos = 50,-7
+postype = p1
+
+bindtime = 1
+removetime = -2
+
+sprpriority = 5
+
+scale = 0.05,0.05
+
+ownpal = 1
+
 [State 210, 5]
 type = ChangeState
 trigger1 = AnimTime = 0
