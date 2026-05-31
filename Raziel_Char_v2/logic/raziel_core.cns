@@ -232,7 +232,7 @@ ground.type = High
 ground.velocity = -2
 
 air.type = High
-air.velocity = -2,-8
+air.velocity = -200,-100
 
 fall = 1
 
