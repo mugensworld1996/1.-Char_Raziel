@@ -24,8 +24,8 @@ FloatPersistIndex = 40  ;reset to 0 between rounds or matches. There are 60 int 
 
 
 [Size]
-xscale = .08			;Horizontal scaling factor.
-yscale = .08			;Vertical scaling factor.
+xscale = .09			;Horizontal scaling factor.
+yscale = .09			;Vertical scaling factor.
 ground.back = 15		;Player width (back, ground)
 ground.front = 16		;Player width (front, ground)
 air.back = 12		;Player width (back, air)
@@ -1010,22 +1010,22 @@ value = 5100 ;Hit ground
 type = Explod
 triggerall = Anim = 0
 triggerall = PalNo = 1
-trigger1 = NumExplod(7000) = 0
-ID = 7000
-anim = 7000
+trigger1 = NumExplod(6500) = 0
+ID = 6500
+anim = 6500
 postype = p1
-pos = -58,-23
+pos = -13,-08
 bindtime = -1
 removetime = -1
 sprpriority = 4
-scale = 0.20,0.20
+scale = 0.095,0.095
 ownpal = 1
 
 [State -2, Remove Reaver P1]
 type = RemoveExplod
 trigger1 = Anim != 0
 trigger2 = PalNo != 1
-ID = 7000
+ID = 6500
 
 ;========================
 ; REAVER PALETA 2
@@ -1038,7 +1038,7 @@ trigger1 = NumExplod(7100) = 0
 ID = 7100
 anim = 7100
 postype = p1
-pos = -58,-23
+pos = -63,-27
 bindtime = -1
 removetime = -1
 sprpriority = 4
@@ -1062,7 +1062,7 @@ trigger1 = NumExplod(7001) = 0
 ID = 7001
 anim = 7000 ; <-- tu nueva anim caminando
 postype = p1
-pos = -51,-29
+pos = -56,-33
 bindtime = -1
 removetime = -1
 sprpriority = 4
@@ -1087,7 +1087,7 @@ trigger1 = NumExplod(7101) = 0
 ID = 7101
 anim = 7100 ; <-- tu nueva anim caminando
 postype = p1
-pos = -51,-29
+pos = -56,-33
 bindtime = -1
 removetime = -1
 sprpriority = 4
@@ -1111,7 +1111,7 @@ trigger1 = NumExplod(7005) = 0
 ID = 7005
 anim = 7005
 postype = p1
-pos = 41,-29 ; <-- AJUSTA ESTO SI HACE FALTA
+pos = 51,-32 ; <-- AJUSTA ESTO SI HACE FALTA
 bindtime = -1
 removetime = -1
 sprpriority = 4
@@ -1135,7 +1135,7 @@ trigger1 = NumExplod(7105) = 0
 ID = 7105
 anim = 7105
 postype = p1
-pos = 41,-29 ; <-- AJUSTA ESTO SI HACE FALTA
+pos = 51,-32 ; <-- AJUSTA ESTO SI HACE FALTA
 bindtime = -1
 removetime = -1
 sprpriority = 4
