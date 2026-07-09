@@ -435,6 +435,16 @@ name = "holdupfwd"
 command = /$UF
 time = 1
 
+;--------------------------------
+; COMANDOS PARA CAMBIAR DE REAVER
+;--------------------------------
+[Command]
+name = "toggle_reaver"
+command = y+z
+time = 1
+
+
+
 ;---------------------------------------------------------------------------
 ; 2. State entry
 ; --------------
@@ -638,7 +648,7 @@ trigger1 = ctrl
 [State -1, Stand Medium Punch]
 type = ChangeState
 value = 210
-triggerall = command = "y"
+triggerall = command = "fwd_c"
 triggerall = command != "holddown"
 trigger1 = statetype = S
 trigger1 = ctrl
@@ -648,7 +658,7 @@ trigger1 = ctrl
 [State -1, Stand Strong Punch]
 type = ChangeState
 value = 220
-triggerall = command = "z"
+triggerall = command = "c"
 triggerall = command != "holddown"
 trigger1 = statetype = S
 trigger1 = ctrl
@@ -675,13 +685,13 @@ trigger1 = ctrl
 
 ;---------------------------------------------------------------------------
 ; Standing Strong Kick
-[State -1, Standing Strong Kick]
-type = ChangeState
-value = 250
-triggerall = command = "c"
-triggerall = command != "holddown"
-trigger1 = statetype = S
-trigger1 = ctrl
+;[State -1, Standing Strong Kick]
+;type = ChangeState
+;value = 250
+;triggerall = command = "c"
+;triggerall = command != "holddown"
+;trigger1 = statetype = S
+;trigger1 = ctrl
 
 ;---------------------------------------------------------------------------
 ; Crouching Light Punch

@@ -222,7 +222,7 @@ trigger1 = Time = 2
 anim = 6000
 ID = 6000
 
-pos = 50,-7
+pos = 53,-7
 postype = p1
 
 bindtime = 1
@@ -230,7 +230,7 @@ removetime = -2
 
 sprpriority = 5
 
-scale = 0.056,0.056
+scale = 0.0555,0.0555
 
 ownpal = 1
 
@@ -1003,29 +1003,56 @@ value = 5100 ;Hit ground
 
 [Statedef -2]
 
+;==========================================
+; Inicializar Reaver
+;==========================================
+
+[State -2, Init Reaver]
+type = VarSet
+trigger1 = RoundState = 0
+trigger1 = Time = 0
+
+v = 20
+value = 1
+
+;==========================================
+; Cambiar entre Spectral y Física
+;==========================================
+
+[State -2, Toggle Reaver]
+type = VarSet
+trigger1 = command = "toggle_reaver"
+
+v = 20
+value = 1 - var(20)
+
+ignorehitpause = 1
+
 ;========================
 ; REAVER PALETA 1
 ;========================
 [State -2, Reaver P1]
 type = Explod
 triggerall = Anim = 0
-triggerall = PalNo = 1
-trigger1 = NumExplod(6500) = 0
-ID = 6500
-anim = 6500
+triggerall = var(20) = 1
+triggerall = PalNo = 1 || PalNo = 3
+trigger1 = NumExplod(7000) = 0
+ID = 7000
+anim = 7000
 postype = p1
-pos = -13,-08
+pos = -63,-27
 bindtime = -1
 removetime = -1
 sprpriority = 4
-scale = 0.095,0.095
+scale = 0.20,0.20
 ownpal = 1
 
-[State -2, Remove Reaver P1]
+[State -2, Remove Reaver Blue]
 type = RemoveExplod
 trigger1 = Anim != 0
-trigger2 = PalNo != 1
-ID = 6500
+trigger2 = !(PalNo = 1 || PalNo = 3)
+trigger3 = var(20) != 1
+ID = 7000
 
 ;========================
 ; REAVER PALETA 2
@@ -1033,7 +1060,8 @@ ID = 6500
 [State -2, Reaver P2]
 type = Explod
 triggerall = Anim = 0
-triggerall = PalNo = 2
+triggerall = var(20) = 1
+triggerall = PalNo = 2 || PalNo = 4
 trigger1 = NumExplod(7100) = 0
 ID = 7100
 anim = 7100
@@ -1045,11 +1073,37 @@ sprpriority = 4
 scale = 0.20,0.20
 ownpal = 1
 
-[State -2, Remove Reaver P2]
+[State -2, Remove Reaver Green]
 type = RemoveExplod
 trigger1 = Anim != 0
-trigger2 = PalNo != 2
+trigger2 = !(PalNo = 2 || PalNo = 4)
+trigger3 = var(20) != 1
 ID = 7100
+
+;========================
+; REAVER FISICO
+;========================
+[State -2, Physical Reaver]
+type = Explod
+triggerall = Anim = 0
+triggerall = var(20) = 0
+trigger1 = NumExplod(6500) = 0
+ID = 6500
+anim = 6500
+postype = p1
+pos = -13,-8
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.095,0.095
+ownpal = 1
+
+[State -2, Remove Physical Reaver]
+type = RemoveExplod
+trigger1 = Anim != 0
+trigger2 = var(20) != 0
+ID = 6500
+
 
 ;========================
 ; REAVER CAMINANDO PALETA 1
@@ -1057,7 +1111,7 @@ ID = 7100
 [State -2, Reaver Walk P1]
 type = Explod
 triggerall = (StateNo = 20 || StateNo = 21)
-triggerall = PalNo = 1
+triggerall = PalNo = 1 || PalNo = 3
 trigger1 = NumExplod(7001) = 0
 ID = 7001
 anim = 7000 ; <-- tu nueva anim caminando
@@ -1072,7 +1126,7 @@ ownpal = 1
 [State -2, Remove Reaver Walk P1]
 type = RemoveExplod
 trigger1 = !(StateNo = 20 || StateNo = 21)
-trigger2 = PalNo != 1
+trigger2 = !(PalNo = 1 || PalNo = 3)
 ID = 7001
 
 
@@ -1082,7 +1136,7 @@ ID = 7001
 [State -2, Reaver Walk P2]
 type = Explod
 triggerall = (StateNo = 20 || StateNo = 21)
-triggerall = PalNo = 2
+triggerall = PalNo = 2 || PalNo = 4
 trigger1 = NumExplod(7101) = 0
 ID = 7101
 anim = 7100 ; <-- tu nueva anim caminando
@@ -1097,7 +1151,7 @@ ownpal = 1
 [State -2, Remove Reaver Walk P2]
 type = RemoveExplod
 trigger1 = !(StateNo = 20 || StateNo = 21)
-trigger2 = PalNo != 2
+trigger2 = !(PalNo = 2 || PalNo = 4)
 ID = 7101
 
 ;========================
