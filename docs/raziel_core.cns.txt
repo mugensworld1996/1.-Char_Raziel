@@ -1021,21 +1021,10 @@ value = 1
 
 [State -2, Toggle Reaver]
 type = VarSet
-triggerall = command = "toggle_reaver"
-trigger1 = var(20) = 1
+trigger1 = command = "toggle_reaver"
 
 v = 20
-value = 0
-
-ignorehitpause = 1
-
-[State -2, Toggle Reaver 2]
-type = VarSet
-triggerall = command = "toggle_reaver"
-trigger1 = var(20) = 0
-
-v = 20
-value = 1
+value = 1 - var(20)
 
 ignorehitpause = 1
 

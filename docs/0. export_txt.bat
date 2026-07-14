@@ -6,7 +6,7 @@ echo EXPORTANDO ARCHIVOS MUGEN
 echo ==========================
 
 :: Carpeta raíz del personaje
-set ROOT=..
+set ROOT=../Raziel_Char
 
 :: Eliminar exportaciones anteriores
 del /q "*.def.txt" 2>nul
