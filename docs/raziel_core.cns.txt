@@ -222,7 +222,7 @@ trigger1 = Time = 2
 anim = 6000
 ID = 6000
 
-pos = 53,-7
+pos = 60,-7
 postype = p1
 
 bindtime = 1
@@ -230,7 +230,7 @@ removetime = -2
 
 sprpriority = 5
 
-scale = 0.0555,0.0555
+scale = 0.20,0.20
 
 ownpal = 1
 
@@ -267,6 +267,25 @@ poweradd= 65
 ctrl = 0
 velset = 0,0
 anim = 220
+
+[State 220, FX]
+type = Explod
+trigger1 = Time = 2
+
+anim = 6001
+ID = 6001
+
+pos = 29,-60
+postype = p1
+
+bindtime = 1
+removetime = -2
+
+sprpriority = 5
+
+scale = 0.13,0.13
+
+ownpal = 1
 
 [State 220, 5]
 type = ChangeState
