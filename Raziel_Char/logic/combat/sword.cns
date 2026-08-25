@@ -1,0 +1,132 @@
+
+;==============================================================================
+; RAZIEL - SWORD COMBAT
+;==============================================================================
+
+;------------------------------------------------------------------------------
+; VARIABLES RELEVANTES
+;------------------------------------------------------------------------------
+;
+; var(20) = Estado de la espada
+;   0 = Equipada
+;   1 = Clavada en el suelo
+;   2 = Lanzada / volando
+;   3 = Caida en el suelo
+;
+;==============================================================================
+
+
+
+;==============================================================================
+; 2100 - CLAVAR ESPADA
+; CON ESPADA -> SIN ESPADA
+;==============================================================================
+
+[Statedef 2100]
+type = S
+movetype = I
+physics = S
+anim = 1005
+ctrl = 0
+velset = 0,0
+sprpriority = 2
+
+
+;------------------------------------------------------------------------------
+; La espada deja de estar equipada
+;
+; TEMPORAL:
+; Por ahora hacemos el cambio al terminar la animacion.
+;
+; Mas adelante este trigger se cambiara al AnimElem exacto
+; en el que Raziel realmente suelta la espada.
+;------------------------------------------------------------------------------
+
+;------------------------------------------------------------------------------
+; Crear objeto espada / grieta
+;------------------------------------------------------------------------------
+
+[State 2100, Create Sword Object]
+type = Helper
+trigger1 = AnimElem = 8
+
+helpertype = normal
+name = "Physical Soul Reaver"
+ID = 6500
+stateno = 7000
+
+postype = p1
+pos = 0,0
+facing = 1
+ownpal = 1
+keyctrl = 0
+
+size.xscale = 1
+size.yscale = 1
+
+;============================================================
+; AL TERMINAR, ESPADA = CLAVADA
+;============================================================
+
+[State 2100, Sword Planted]
+type = VarSet
+trigger1 = AnimTime = 0
+v = 20
+value = 1
+
+;------------------------------------------------------------------------------
+; Volver al Stand sin espada
+;------------------------------------------------------------------------------
+
+[State 2100, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+
+;------------------------------------------------------------------------------
+; La espada vuelve a estar equipada
+;
+; TEMPORAL:
+; Por ahora sucede al terminar la animacion.
+;
+; Mas adelante se usara el AnimElem exacto donde Raziel
+; toma fisicamente la espada.
+;------------------------------------------------------------------------------
+
+;==============================================================================
+; 2110 - RECOGER / DESCLAVAR ESPADA
+; SIN ESPADA -> CON ESPADA
+;==============================================================================
+
+[Statedef 2110]
+type = S
+movetype = I
+physics = S
+anim = 1006
+ctrl = 0
+velset = 0,0
+sprpriority = 2
+
+
+;------------------------------------------------------------------------------
+; Al terminar, la espada vuelve a estar equipada
+;------------------------------------------------------------------------------
+
+[State 2110, Sword Equipped]
+type = VarSet
+trigger1 = AnimTime = 0
+v = 20
+value = 0
+
+
+;------------------------------------------------------------------------------
+; Volver al Stand con espada
+;------------------------------------------------------------------------------
+
+[State 2110, End]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1

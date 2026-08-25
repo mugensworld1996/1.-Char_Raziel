@@ -1,0 +1,298 @@
+
+;==============================================================================
+; RAZIEL - PHYSICAL SOUL REAVER
+; weapon.cns
+;==============================================================================
+
+; Helper ID 6500
+;
+; States:
+; 7000 = Aparicion de la grieta
+; 7010 = Espada clavada
+; 7020 = Recuperando espada
+; 7030 = Grieta residual / desaparicion
+;
+; Animations:
+; 6501 = Aparece grieta
+; 6502 = Grieta estable
+; 6503 = Desaparece grieta
+; 6504 = Frente de la grieta
+; 6505 = Espada clavada
+;
+;==============================================================================
+
+
+
+;==============================================================================
+; 7000 - APARICION DE LA GRIETA
+;==============================================================================
+
+[Statedef 7000]
+type = S
+movetype = I
+physics = N
+anim = 1
+ctrl = 0
+velset = 0,0
+sprpriority = -10
+
+
+;------------------------------------------------------------------------------
+; Grieta apareciendo - DETRAS de todos
+;------------------------------------------------------------------------------
+
+[State 7000, Crack Opening]
+type = Explod
+trigger1 = Time = 0
+
+ID = 6501
+anim = 6501
+
+postype = p1
+pos = 0,6
+
+bindtime = -1
+removetime = -1
+
+sprpriority = -5
+
+scale = 0.09,0.09
+ownpal = 1
+
+
+;------------------------------------------------------------------------------
+; Parte frontal - DELANTE de espada/personajes
+;------------------------------------------------------------------------------
+
+[State 7000, Crack Front]
+type = Explod
+trigger1 = Time = 0
+
+ID = 6504
+anim = 6504
+
+postype = p1
+pos = 0,6
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 6
+
+scale = 0.09,0.09
+ownpal = 1
+
+
+;------------------------------------------------------------------------------
+; Cuando Raziel termina de clavarla, pasar al estado estable
+;------------------------------------------------------------------------------
+
+[State 7000, Planted]
+type = ChangeState
+trigger1 = Root,StateNo != 2100
+value = 7010
+
+
+;==============================================================================
+; 7010 - ESPADA CLAVADA
+;==============================================================================
+
+[Statedef 7010]
+type = S
+movetype = I
+physics = N
+anim = -1
+ctrl = 0
+velset = 0,0
+
+
+;------------------------------------------------------------------------------
+; Limpiar efectos de transición
+;------------------------------------------------------------------------------
+
+[State 7010, Remove Opening]
+type = RemoveExplod
+trigger1 = Time = 0
+ID = 6501
+
+[State 7010, Remove Old Front]
+type = RemoveExplod
+trigger1 = Time = 0
+ID = 6504
+
+
+;------------------------------------------------------------------------------
+; Grieta estable - DETRAS
+;------------------------------------------------------------------------------
+
+[State 7010, Crack]
+type = Explod
+trigger1 = Time = 0
+
+ID = 6502
+anim = 6502
+
+postype = p1
+pos = 0,6
+
+bindtime = -1
+removetime = -1
+
+sprpriority = -5
+
+scale = 0.09,0.09
+ownpal = 1
+
+
+;------------------------------------------------------------------------------
+; Espada - DELANTE de los personajes
+;------------------------------------------------------------------------------
+
+[State 7010, Sword]
+type = Explod
+trigger1 = Time = 0
+
+ID = 6505
+anim = 6505
+
+postype = p1
+pos = 0,9
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 5
+
+scale = 0.09,0.09
+ownpal = 1
+
+
+;------------------------------------------------------------------------------
+; Frente de la grieta - DELANTE DE LA ESPADA
+;------------------------------------------------------------------------------
+
+[State 7010, Crack Front]
+type = Explod
+trigger1 = Time = 0
+
+ID = 6504
+anim = 6504
+
+postype = p1
+pos = 0,6
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 6
+
+scale = 0.09,0.09
+ownpal = 1
+
+
+;------------------------------------------------------------------------------
+; Raziel empieza a recogerla
+;------------------------------------------------------------------------------
+
+[State 7010, Start Recover]
+type = ChangeState
+trigger1 = Root,StateNo = 2110
+value = 7020
+
+
+;==============================================================================
+; 7020 - RECUPERANDO ESPADA
+;==============================================================================
+
+[Statedef 7020]
+type = S
+movetype = I
+physics = N
+anim = -1
+ctrl = 0
+velset = 0,0
+
+
+;------------------------------------------------------------------------------
+; Quitar espada independiente
+;------------------------------------------------------------------------------
+
+[State 7020, Remove Sword]
+type = RemoveExplod
+trigger1 = Time = 0
+ID = 6505
+
+
+;------------------------------------------------------------------------------
+; Mantener grieta y borde frontal
+;------------------------------------------------------------------------------
+; 6502 y 6504 ya existen desde State 7010.
+; No hace falta recrearlos.
+
+
+;------------------------------------------------------------------------------
+; Cuando termina la animacion de recoger
+;------------------------------------------------------------------------------
+
+[State 7020, Sword Taken]
+type = ChangeState
+trigger1 = Root,StateNo != 2110
+value = 7030
+
+
+;==============================================================================
+; 7030 - GRIETA RESIDUAL
+;==============================================================================
+
+[Statedef 7030]
+type = S
+movetype = I
+physics = N
+anim = -1
+ctrl = 0
+velset = 0,0
+
+
+;------------------------------------------------------------------------------
+; Ya no necesitamos la parte frontal
+;------------------------------------------------------------------------------
+
+[State 7030, Remove Front]
+type = RemoveExplod
+trigger1 = Time = 0
+ID = 6504
+
+;------------------------------------------------------------------------------
+; Despues de 2 segundos quitar grieta estable
+;------------------------------------------------------------------------------
+
+[State 7030, Remove Crack]
+type = RemoveExplod
+trigger1 = Time = 120
+ID = 6502
+
+;------------------------------------------------------------------------------
+; Animacion de cierre/desaparicion
+;------------------------------------------------------------------------------
+
+[State 7030, Crack Closing]
+type = Explod
+trigger1 = Time = 120
+
+ID = 6503
+anim = 6503
+
+postype = p1
+pos = 0,6
+
+bindtime = -1
+removetime = -2
+
+sprpriority = -5
+
+scale = 0.09,0.09
+ownpal = 1
+
+[State 7030, Destroy]
+type = DestroySelf
+trigger1 = Time = 180

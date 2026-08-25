@@ -1,0 +1,107 @@
+;==============================================================================
+; RAZIEL - GLOBAL SYSTEM
+; MUGEN 1.0
+;==============================================================================
+
+;------------------------------------------------------------------------------
+; VARIABLES
+;------------------------------------------------------------------------------
+;
+; var(20) = Estado de la espada
+;   0 = Equipada
+;   1 = Clavada
+;   2 = Lanzada
+;   3 = Caida
+;
+; var(21) = Reaver activo
+;   0 = Spectral
+;   1 = Fire
+;   2 = Air
+;   3 = Water
+;   4 = Earth
+;   5 = Lightning
+;   6 = Light
+;   7 = Dark
+;   8 = Spirit
+;
+; var(22) = Carga de la espada
+;
+;==============================================================================
+
+
+;==============================================================================
+; STATE -2
+; Logica global que se ejecuta permanentemente
+;==============================================================================
+
+[Statedef -2]
+
+
+;------------------------------------------------------------------------------
+; INICIALIZACION
+;------------------------------------------------------------------------------
+
+
+; Raziel comienza cada round CON la espada
+[State -2, Init Sword]
+type = VarSet
+trigger1 = RoundState = 0
+v = 20
+value = 0
+ignorehitpause = 1
+
+
+; Reaver por defecto: Spectral
+; No se mostrara mientras var(20) = 0
+[State -2, Init Reaver]
+type = VarSet
+trigger1 = RoundState = 0
+v = 21
+value = 0
+ignorehitpause = 1
+
+
+; La espada comienza sin carga
+[State -2, Init Sword Charge]
+type = VarSet
+trigger1 = RoundState = 0
+v = 22
+value = 0
+ignorehitpause = 1
+
+
+;------------------------------------------------------------------------------
+; PROTECCION DE VALORES
+;------------------------------------------------------------------------------
+
+[State -2, Reaver Min]
+type = VarSet
+trigger1 = var(21) < 0
+v = 21
+value = 0
+ignorehitpause = 1
+
+
+[State -2, Reaver Max]
+type = VarSet
+trigger1 = var(21) > 8
+v = 21
+value = 8
+ignorehitpause = 1
+
+
+
+;==============================================================================
+; STATE -3
+;==============================================================================
+
+[Statedef -3]
+
+
+; Sonido al aterrizar
+[State -3, Landing Sound]
+type = PlaySnd
+triggerall = Time = 1
+trigger1 = StateNo = 52
+trigger2 = StateNo = 106
+value = 40,0
