@@ -168,12 +168,15 @@ Los sprites de este personaje están siendo creados desde cero utilizando distin
 
 ### Pipeline de desarrollo
 
-1. Creación de sprites base
-2. Conversión a estilo 3D
-3. Generación de animaciones
-4. Conversión a video
-5. Extracción de frames
-6. Conversión final a BMP para MUGEN
+1. Creación de sprites base.
+2. Conversión a estilo 3D.
+3. Generación de animaciones.
+4. Conversión a video.
+5. Extracción de frames.
+6. Edición y limpieza manual.
+7. Conversión final a BMP para MUGEN.
+8. Importación al SFF.
+9. Creación de AIR, CLSN y lógica MUGEN.
 
 ### Herramientas utilizadas
 
@@ -184,15 +187,19 @@ Los sprites de este personaje están siendo creados desde cero utilizando distin
 - Vidu
 - VLC
 - Fighter Factory Clasic
+- Herramientas de edición de imagen, BMP y palettes ACT
 
 ## Base del proyecto
 
-Parte del código utilizado en este personaje proviene de implementaciones previas de Raziel realizadas por:
+El proyecto parte de la plantilla clásica de MUGEN / Elecbyte y también ha estudiado implementaciones anteriores de Raziel realizadas por otros autores.
+
+Referencias históricas utilizadas durante el desarrollo:
 
 - Raziel Seylos
 - Dave Rattlz
 
 Su trabajo sirvió como base inicial para estados, movimientos y lógica general del personaje.
+El personaje de Dave Rattlz se utiliza principalmente como **referencia de estudio** para ideas sobre Reavers, Helpers, states y organización de lógica. La arquitectura actual de este proyecto se está desarrollando de forma independiente y fue reorganizada para soportar dos formas principales: con espada física y sin espada.
 
 A partir de esa base se están desarrollando:
 
@@ -206,17 +213,37 @@ A partir de esa base se están desarrollando:
 
 ## Estado actual
 
-🚧 Proyecto en desarrollo temprano.
+🚧 **Proyecto en desarrollo activo.**
 
-Actualmente aún faltan:
+Implementado actualmente:
 
-- Specials
-- Supers
-- IA
-- Más animaciones
-- FX avanzados
-- Variantes del Reaver
-- Transiciones adicionales
+- MUGEN 1.0.
+- Stand con espada física.
+- Sistema global de estado de espada mediante variables.
+- Transición con espada → sin espada.
+- Transición sin espada → con espada.
+- Animación para clavar la espada.
+- Animación para recuperarla.
+- Helper para representar la espada fuera de Raziel.
+- Grieta de aparición, grieta estable y desaparición.
+- Composición por capas: grieta detrás, espada delante de personajes y borde frontal delante de la espada.
+- Normales heredados del moveset sin espada.
+- Throws, taunt y estados base heredados de la plantilla actual.
+
+Todavía faltan, entre otras cosas:
+
+- Locomoción completa con espada.
+- Normales con espada.
+- Ataques agachado con espada.
+- Ataques aéreos con espada.
+- Sistema completo de los 9 Reavers.
+- Specials y Supers.
+- IA.
+- Balance.
+- FX avanzados.
+- Sistema definitivo para lanzar la espada.
+- Sistema de carga / absorción de energía de la espada.
+- Restricción de distancia para recoger la espada.
 
 ## Planes futuros
 
@@ -244,12 +271,21 @@ Actualmente aún faltan:
 - Crystal Dynamics
 - Eidos Interactive
 
+## Aviso
+Raziel, Legacy of Kain, Soul Reaver y los elementos asociados pertenecen a sus respectivos propietarios.
+
+Este es un proyecto fan-made sin fines comerciales.
+
 ## Notas finales
 
 Gracias a todas las personas que mantienen viva la comunidad MUGEN.
 
 Este proyecto existe gracias a años de trabajo compartido por cientos de creadores alrededor del mundo.
 
-Legacy of Kain y Raziel pertenecen a sus respectivos propietarios.
+La documentación técnica real del código se encuentra en `2. developer.txt`.
 
-Este es un proyecto fan-made sin fines comerciales.
+Los controles que **ya funcionan actualmente** se encuentran en `3. gameplay.txt`.
+
+Las ideas, mecánicas deseadas y características que **todavía no deben tratarse como implementadas** se encuentran en `4. labs.txt`.
+
+No asumir que una idea de `labs.txt` ya existe en el código.

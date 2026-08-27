@@ -1,279 +1,752 @@
 # Raziel — Developer Documentation
+# MUGEN 1.0
+# ESTADO DOCUMENTADO: 26/08/2026
 
-## Estructura del proyecto
+===============================================================================
+OBJETIVO DE ESTE ARCHIVO
+===============================================================================
 
-```txt
+Este TXT documenta SOLAMENTE el estado técnico actual del proyecto y las
+decisiones de arquitectura que YA están reflejadas en los archivos.
+
+Las ideas futuras pertenecen a:
+
+    4. labs.txt
+
+Los controles que YA funcionan pertenecen a:
+
+    3. gameplay.txt
+
+Este archivo está pensado para poder iniciar una conversación nueva con otra IA
+sin depender del historial de chat anterior.
+
+IMPORTANTE:
+- No asumir que un sistema descrito en labs.txt ya está implementado.
+- Antes de modificar lógica, revisar los archivos CNS/CMD/DEF/AIR adjuntos.
+- Mantener los significados de var(20), var(21) y var(22).
+
+
+===============================================================================
+1. ENGINE
+===============================================================================
+
+Engine objetivo:
+
+    MUGEN 1.0
+
+El personaje utiliza:
+
+    stcommon=common1.cns
+
+No existe actualmente un common1.cns personalizado dentro del char.
+
+MUGEN utiliza el common1.cns estándar de su carpeta data. Cuando Raziel necesita
+cambiar un State común, se sobrescribe únicamente ese State desde los CNS
+propios.
+
+Ejemplo actual:
+
+    State 0
+
+está redefinido en:
+
+    logic/core/core.cns
+
+De esta forma no es necesario copiar y modificar todo common1.cns.
+
+
+===============================================================================
+2. ESTRUCTURA ACTUAL DEL PROYECTO
+===============================================================================
+
 Raziel_Char/
 ├── assets/
-├── docs/
+│   ├── storyboards/
+│   ├── raziel.air
+│   ├── raziel.sff
+│   └── raziel.snd
+│
 ├── logic/
+│   ├── combat/
+│   │   ├── sword.cns
+│   │   ├── unarmed.cns
+│   │   └── weapon.cns
+│   │
+│   ├── commands/
+│   │   └── raziel.cmd
+│   │
+│   ├── core/
+│   │   ├── constants.cns
+│   │   ├── core.cns
+│   │   └── system.cns
+│   │
+│   └── reavers/
+│       ├── reavers_1.cns
+│       ├── reavers_2.cns
+│       └── reavers_3.cns
+│
 ├── palette/
+│   ├── razielAzul1.act
+│   ├── razielVerde1.act
+│   ├── razielAzul2.act
+│   └── razielVerde2.act
+│
 └── raziel.def
-```
 
----
 
-# Descripción de carpetas
+===============================================================================
+3. RAZIEL.DEF ACTUAL
+===============================================================================
 
-## assets/
+Archivos cargados actualmente:
 
-Contiene archivos compilados utilizados por MUGEN:
+    sprite=assets/raziel.sff
+    sound=assets/raziel.snd
+    anim=assets/raziel.air
 
-- `.sff`
-- `.snd`
-- `.air`
-- storyboards
+    cmd=logic/commands/raziel.cmd
 
----
+    cns=logic/core/constants.cns
+    st=logic/core/core.cns
+    st0=logic/core/system.cns
 
-## docs/
+    st1=logic/combat/unarmed.cns
+    st2=logic/combat/sword.cns
+    st3=logic/combat/weapon.cns
 
-Documentación del proyecto.
+    stcommon=common1.cns
 
-Archivos principales:
+Los Reavers ya tienen archivos reservados, pero EN EL DEF ACTUAL están
+comentados/desactivados:
 
-- autor.txt
-- gameplay.txt
-- desarrollador.txt
+    ;st4=logic/reavers/reavers_1.cns
+    ;st5=logic/reavers/reavers_2.cns
+    ;st6=logic/reavers/reavers_3.cns
 
----
+Por tanto, esos tres archivos NO forman todavía parte activa de la lógica del
+personaje.
 
-## logic/
+Palettes configuradas:
 
-Contiene toda la lógica del personaje:
+    pal1=palette/razielAzul1.act
+    pal2=palette/razielVerde1.act
+    pal3=palette/razielAzul2.act
+    pal4=palette/razielVerde2.act
 
-- comandos
-- states
-- IA
-- specials
-- systems
 
-Archivos principales:
+===============================================================================
+4. RESPONSABILIDAD DE CADA ARCHIVO
+===============================================================================
 
-| Archivo | Descripción |
-|---|---|
-| raziel.cmd | Inputs y comandos |
-| raziel_core.cns | Estados principales |
-| raziel_specials.cns | Specials |
-| raziel_reaver_system.cns | Sistema Reaver |
-| raziel_fx.cns | Efectos visuales |
+-----------------------------
+logic/core/constants.cns
+-----------------------------
 
----
+Contiene las constantes del personaje:
 
-## palette/
+    [Data]
+    [Size]
+    [Velocity]
+    [Movement]
 
-Palettes `.act` utilizadas por el personaje.
+Valores relevantes actuales:
 
----
+    life = 1000
+    power = 3000
+    attack = 100
+    defence = 100
 
-## Sprites/
+    xscale = 0.09
+    yscale = 0.09
 
-Sprites fuente utilizados durante el desarrollo.
+    walk.fwd = 2.2
+    walk.back = -2.2
+    run.fwd = 4.6, 0
+    run.back = -4.5,-3.8
 
-No son cargados directamente por MUGEN.
+    jump.neu = 0,-9
+    yaccel = 0.30
 
----
+    airjump.num = 0
 
-# Archivos importantes
+IMPORTANTE:
+Actualmente NO hay Air Jump habilitado porque `airjump.num = 0`.
 
-## raziel.def
 
-Archivo principal del personaje.
+-----------------------------
+logic/core/core.cns
+-----------------------------
 
-Conecta:
-- sprites
-- sonidos
-- lógica
-- palettes
-- storyboards
+Contiene estados comunes/persistentes propios de Raziel.
 
----
+States actuales:
 
-## raziel.cmd
+    0   = Stand personalizado
+    800 = Throw attempt
+    810 = Throw
+    820 = Estado del oponente durante Throw
+    821 = Continuación / caída del oponente
+
+State 0:
+
+    var(20) = 0
+        -> usa Anim 1000
+        -> Stand CON espada
+
+    var(20) != 0
+        -> usa Anim 0
+        -> Stand SIN espada
+
+También conserva lógica relevante del State 0 estándar:
+- Reset de velocidad Y.
+- Frenado.
+- Cambio a State 5050 si Raziel muere.
+
+
+-----------------------------
+logic/core/system.cns
+-----------------------------
+
+Es el cerebro global del personaje.
 
 Contiene:
 
-- comandos
-- inputs
-- ChangeState
-- triggers
-- IA futura
+    [Statedef -2]
+    [Statedef -3]
 
----
+Variables GLOBALES congeladas:
 
-## raziel_core.cns
+    var(20) = ESTADO DE LA ESPADA
 
-Contiene:
+        0 = Equipada / en la mano
+        1 = Clavada en el suelo
+        2 = Lanzada / volando
+        3 = Caída en el suelo
 
-- Data
-- Size
-- Velocity
-- Movement
-- estados base
-- lógica principal
+    var(21) = REAVER ACTIVO
 
----
+        0 = Spectral
+        1 = Fire
+        2 = Air
+        3 = Water
+        4 = Earth
+        5 = Lightning
+        6 = Light
+        7 = Dark
+        8 = Spirit
 
-## raziel.air
+    var(22) = CARGA DE LA ESPADA
 
-Define las animaciones.
+        Actualmente se inicializa a 0.
+        La mecánica de carga todavía NO está implementada.
 
-Formato:
+Inicialización actual:
 
-```txt
-group, image, x, y, tiempo
-```
+    RoundState = 0
+        var(20) = 0
+        var(21) = 0
+        var(22) = 0
 
----
+Esto provoca que Raziel inicie cada round con la espada equipada.
 
-## raziel.sff
+También existen límites de seguridad para var(21):
 
-Archivo compilado de sprites utilizado por MUGEN.
+    menor que 0 -> 0
+    mayor que 8 -> 8
 
----
+State -3 conserva actualmente el sonido de aterrizaje para States 52 y 106.
 
-# Sistema Soul Reaver
+IMPORTANTE:
+Aunque var(21) ya está definido, el sistema completo de Reavers todavía NO está
+conectado.
 
-El Soul Reaver funciona mediante:
 
-- Explods persistentes
-- ownpal = 1
-- overlays independientes
-- animaciones separadas por palette
+-----------------------------
+logic/combat/unarmed.cns
+-----------------------------
 
----
+Contiene el moveset heredado SIN ESPADA / combate corporal.
 
-# IDs del Soul Reaver
+States de ataques actuales:
 
-| Palette | IDs |
-|---|---|
-| Palette 1 | 7000–7007 |
-| Palette 2 | 7100–7107 |
+    200-275 = Normales / cadenas de pie
+    400-450 = Normales agachado
+    600-650 = Normales aéreos
 
----
+Estados destacados:
 
-# Funcionamiento técnico
+    200 = Standing Light Punch
+    210 = Standing Medium Punch
+    220 = Standing Strong Punch
+    230 = Standing Light Kick
+    240 = Standing Medium Kick
+    250 = Standing Strong Kick
 
-El sistema utiliza:
+Combos / continuaciones:
 
-```txt
-type = Explod
-bindtime = -1
-ownpal = 1
-sprpriority = 4
-```
+    255 = 2D
+    260 = 3D
+    265 = 2A
+    270 = 2E
+    275 = 3E
 
-Esto permite:
+Actualmente este archivo también conserva states generales heredados de la
+plantilla:
 
-- mantener el Reaver unido al personaje
-- usar palettes independientes
-- renderizar encima del sprite principal
+    170 = Lose by Time Over
+    180 = Win state decider
+    181 = Win pose
+    190 = Introduction
+    195 = Taunt
 
----
+Esto es el ESTADO REAL ACTUAL DEL ARCHIVO.
+No mover estos states automáticamente en una conversación nueva sin revisar
+primero el código.
 
-# Pipeline de sprites
+LIMITACIÓN ACTUAL IMPORTANTE:
+Los comandos de ataques heredados todavía no están separados completamente por
+var(20). Por tanto, el moveset definitivo "con espada" aún no reemplaza los
+normales heredados.
 
-## Proceso general
 
-1. Creación de sprite base
-2. Conversión 3D
-3. Generación de animación
-4. Export a video
-5. Extracción de frames
-6. Conversión BMP
-7. Importación a SFF
+-----------------------------
+logic/combat/sword.cns
+-----------------------------
 
----
+Contiene actualmente la transición física entre las dos formas.
 
-# Herramientas utilizadas
+State 2100:
+    CON ESPADA -> SIN ESPADA
 
-- ChatGPT
-- Grok
-- Gemini
-- A2E
-- Vidu
-- Fighter Factory
-- Software de edición BMP
-- Software de edición ACT
+    anim = 1005
 
----
+Durante AnimElem = 8:
 
-# Convenciones de states
+    crea Helper
+    ID = 6500
+    stateno = 7000
+    name = "Physical Soul Reaver"
 
-| Rango | Uso |
-|---|---|
-| 0–199 | States comunes |
-| 200–299 | Normales de pie |
-| 400–499 | Normales agachado |
-| 600–699 | Normales aéreos |
-| 800–899 | Throws |
-| 1000–1999 | Specials |
-| 3000–3999 | Supers |
+Al terminar la animación:
 
----
+    var(20) = 1
+    ChangeState -> 0
 
-# Convenciones futuras
+Resultado:
+Raziel termina sin espada y la espada queda representada por el Helper.
 
-## Specials
 
-Todos los specials deben separarse en:
+State 2110:
+    SIN ESPADA -> CON ESPADA
 
-```txt
-logic/raziel_specials.cns
-```
+    anim = 1006
 
----
+Al terminar:
 
-## FX
+    var(20) = 0
+    ChangeState -> 0
 
-Todos los efectos deben separarse en:
+Resultado:
+Raziel regresa al Stand con espada (Anim 1000).
 
-```txt
-logic/raziel_fx.cns
-```
+IMPORTANTE:
+Actualmente la lógica de recogida NO comprueba distancia a la espada.
+Mientras var(20)=1 y Raziel tenga control en suelo, puede ejecutar el State 2110.
 
----
 
-## Reaver variants
+-----------------------------
+logic/combat/weapon.cns
+-----------------------------
 
-Cada variante futura del Reaver debe tener:
+Controla la Soul Reaver física cuando está fuera de la mano de Raziel.
 
-- palette propia
-- anim IDs independientes
-- Explods separados
+Helper:
 
----
+    ID = 6500
 
-# Recomendaciones para contributors
+States:
 
-- Mantener nomenclatura consistente
-- No reutilizar state IDs existentes
-- Mantener palettes indexadas
-- Mantener sprites en BMP indexado
-- Documentar nuevos systems
+    7000 = Aparición de grieta
+    7010 = Espada clavada
+    7020 = Recuperando espada
+    7030 = Grieta residual / desaparición
 
----
+Animaciones/Explods utilizados:
 
-# Compatibilidad
+    6501 = Aparición de grieta
+    6502 = Grieta estable
+    6503 = Desaparición de grieta
+    6504 = Parte frontal / tapa de la grieta
+    6505 = Espada clavada
 
-Proyecto diseñado para:
+Composición visual actual:
 
-- MUGEN 1.0
+    6501 / 6502 / 6503
+        sprpriority = -5
+        -> detrás de los personajes
 
-No compatible oficialmente con:
+    6505
+        sprpriority = 5
+        -> delante de los personajes
 
-- WinMUGEN
-- MUGEN 1.1
+    6504
+        sprpriority = 6
+        -> delante de la espada
 
----
+Esto crea un falso efecto 3D:
 
-# Filosofía del proyecto
+    grieta de fondo
+        < personajes
+            < espada
+                < frente de grieta
 
-Este proyecto es completamente libre para:
 
-- estudiar
-- modificar
-- reutilizar
-- expandir
+State 7000:
+- Crea 6501 (grieta apareciendo).
+- Crea 6504 (frente).
+- 6501 usa `removetime = -1` para no desaparecer al terminar su animación y
+  evitar el parpadeo antes de 6502.
+- Cuando Root deja State 2100 -> pasa a State 7010.
 
-La intención es mantener el espíritu abierto de la comunidad MUGEN.
+State 7010:
+- Elimina 6501.
+- Crea 6502.
+- Crea 6505.
+- Mantiene/recrea 6504 según el código actual.
+- Cuando Root entra a State 2110 -> pasa a State 7020.
+
+State 7020:
+- Elimina 6505.
+- Mantiene la grieta durante la animación de recuperar.
+- Cuando Root deja State 2110 -> pasa a State 7030.
+
+State 7030:
+- Elimina 6504.
+- Mantiene 6502.
+- A Time = 120 elimina 6502 y crea 6503.
+- A Time = 180 destruye el Helper.
+
+Escala actual de los Explods:
+
+    0.09,0.09
+
+Posición actual:
+- Grietas / frente: aproximadamente `pos = 0,6`
+- Espada: aproximadamente `pos = 0,9`
+
+Estas posiciones ya fueron ajustadas visualmente y funcionan con el montaje
+actual.
+
+BUGS YA RESUELTOS EN ESTE SISTEMA:
+1. Aparecía una copia gigante de Raziel al crear el Helper.
+   Se corrigió haciendo invisible la representación propia del Helper.
+2. 6501 terminaba y desaparecía antes de que apareciera 6502.
+   Se corrigió manteniendo 6501 (`removetime = -1`) hasta el cambio al State
+   estable.
+
+
+-----------------------------
+logic/commands/raziel.cmd
+-----------------------------
+
+Contiene los inputs y State -1.
+
+Cambio de modo actual:
+
+    [Command]
+    name = "sword_switch"
+    command = y+z
+    time = 1
+
+State -1:
+
+    var(20)=0 + sword_switch
+        -> State 2100
+        -> clavar espada
+
+    var(20)=1 + sword_switch
+        -> State 2110
+        -> recuperar espada
+
+Las dos entradas requieren:
+- Raziel en suelo (`statetype = S`)
+- control (`ctrl`)
+
+
+-----------------------------
+logic/reavers/reavers_1.cns
+logic/reavers/reavers_2.cns
+logic/reavers/reavers_3.cns
+-----------------------------
+
+Actualmente están reservados pero VACÍOS y desactivados en raziel.def.
+
+Distribución planificada de los archivos:
+
+    reavers_1.cns
+        Spectral
+        Fire
+        Air
+
+    reavers_2.cns
+        Water
+        Earth
+        Lightning
+
+    reavers_3.cns
+        Light
+        Dark
+        Spirit
+
+Esta distribución es arquitectura acordada, pero los movesets todavía no están
+implementados.
+
+
+===============================================================================
+5. RAZIEL.AIR — ANIMACIONES RELEVANTES ACTUALES
+===============================================================================
+
+Animaciones nuevas importantes:
+
+    1000 = Stand con espada
+
+    1005 = Clavando espada
+           CON espada -> SIN espada
+
+    1006 = Sacando / recuperando espada
+           SIN espada -> CON espada
+
+La Action 1006 utiliza actualmente los frames del grupo 1005 en orden inverso.
+
+Sistema de grieta / espada:
+
+    6501 = aparición de la grieta
+    6502 = grieta estable
+    6503 = desaparición de la grieta
+    6504 = parte frontal de la grieta
+    6505 = espada clavada
+
+Action 1:
+    -1,-1, 0,0, 0
+
+Se utiliza como animación invisible disponible dentro del AIR.
+
+El AIR conserva además una gran cantidad de animaciones heredadas, incluidos
+recursos 7000+ de prototipos antiguos del Reaver. Su existencia en el AIR NO
+significa que estén conectados actualmente al sistema nuevo.
+
+
+===============================================================================
+6. FLUJO ACTUAL DEL SISTEMA DE ESPADA
+===============================================================================
+
+INICIO DEL ROUND
+
+    system.cns
+        var(20)=0
+            |
+            v
+    State 0
+        Anim 1000
+            |
+            v
+    RAZIEL CON ESPADA
+
+
+CLAVAR
+
+    Y+Z
+      |
+      v
+    State 2100
+      |
+      v
+    Anim 1005
+      |
+      +-- AnimElem 8 --> Helper 6500 / State 7000
+      |
+      v
+    Anim termina
+      |
+      +-- var(20)=1
+      |
+      v
+    State 0 / Anim 0
+      |
+      v
+    RAZIEL SIN ESPADA
+
+
+ESPADA CLAVADA
+
+    Helper 6500
+      |
+      +-- 6502 detrás
+      +-- 6505 espada delante
+      +-- 6504 delante de la espada
+
+
+RECUPERAR
+
+    Y+Z
+      |
+      v
+    State 2110
+      |
+      v
+    Anim 1006
+      |
+      +-- Helper pasa por State 7020
+      |
+      v
+    Anim termina
+      |
+      +-- var(20)=0
+      |
+      v
+    State 0 / Anim 1000
+      |
+      v
+    RAZIEL CON ESPADA
+
+
+GRIETA RESIDUAL
+
+    6502 queda en el suelo
+        |
+        | ~120 ticks
+        v
+    6503 desaparición
+        |
+        v
+    Helper se destruye
+
+
+===============================================================================
+7. CONVENCIONES / RANGOS ACTUALES
+===============================================================================
+
+Estados heredados / base:
+
+    0-199      comunes
+    200-299    normales de pie / combos sin espada
+    400-499    normales agachado
+    600-699    normales aéreos
+    800-899    throws
+
+Sistema nuevo de espada:
+
+    2100       clavar espada
+    2110       recuperar espada
+
+Helper físico:
+
+    7000-7030  estados del objeto espada/grieta
+
+Animations físicas:
+
+    1000       stand con espada
+    1005       clavar
+    1006       recuperar
+
+    6501-6505  grieta / espada
+
+
+===============================================================================
+8. REAVERS — CONVENCIÓN RESERVADA
+===============================================================================
+
+var(21):
+
+    0 Spectral
+    1 Fire
+    2 Air
+    3 Water
+    4 Earth
+    5 Lightning
+    6 Light
+    7 Dark
+    8 Spirit
+
+Rangos de State propuestos para cuando se implemente:
+
+    3000-3099  Spectral
+    3100-3199  Fire
+    3200-3299  Air
+
+    3300-3399  Water
+    3400-3499  Earth
+    3500-3599  Lightning
+
+    3600-3699  Light
+    3700-3799  Dark
+    3800-3899  Spirit
+
+IMPORTANTE:
+Estos rangos están reservados como convención de desarrollo. Los Reavers todavía
+no están implementados en los tres CNS.
+
+
+===============================================================================
+9. SPECTRAL REAVER: DOS COLORES, UN SOLO MODO
+===============================================================================
+
+Diseño acordado:
+
+    var(21)=0
+        = Spectral Reaver
+
+El Spectral tendrá dos apariencias:
+
+    Azul
+        para palettes azules de Raziel
+
+    Verde
+        para palettes verdes de Raziel
+
+NO son dos Reavers diferentes.
+NO deben consumir dos valores distintos de var(21).
+
+La selección azul/verde deberá resolverse visualmente mediante PalNo / palette,
+cuando el sistema se vuelva a implementar.
+
+Actualmente esta lógica todavía NO está conectada.
+
+
+===============================================================================
+10. ESTADO ACTUAL / PUNTO DE CONTINUACIÓN
+===============================================================================
+
+AL CERRAR ESTA DOCUMENTACIÓN:
+
+FUNCIONA:
+- Raziel inicia con espada.
+- Stand con espada (1000).
+- Y+Z entra correctamente a State 2100.
+- Anim 1005 clava la espada.
+- Se crea la grieta y la espada independiente.
+- La composición de capas 6502/6505/6504 funciona.
+- La espada puede recuperarse con Y+Z.
+- Anim 1006 devuelve a Raziel al modo con espada.
+- La grieta queda temporalmente y desaparece.
+- Se resolvió el bug del Helper mostrando un Raziel gigante.
+- Se resolvió el parpadeo entre 6501 y 6502.
+
+TODAVÍA NO ESTÁ:
+- Locomoción propia con espada.
+- Ataques propios con espada.
+- Proximidad obligatoria para recuperar espada.
+- Lanzamiento de espada.
+- Carga de espada.
+- Reavers elementales activos.
+- Spectral azul/verde conectado al nuevo sistema.
+- Y/Z especiales de Reaver.
+- IA.
+- Specials/Supers definitivos.
+
+SIGUIENTE BLOQUE DE TRABAJO RECOMENDADO:
+Crear las animaciones de locomoción con espada y adaptar los common states
+necesarios (walk, crouch, jump, run, etc.) para seleccionar animación según
+var(20), conservando la física estándar siempre que sea posible.
+
+NO rehacer la arquitectura de archivos sin una razón concreta.

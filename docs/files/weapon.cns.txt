@@ -56,7 +56,7 @@ removetime = -1
 
 sprpriority = -5
 
-scale = 0.07,0.07
+scale = 0.09,0.09
 ownpal = 1
 
 
@@ -79,7 +79,7 @@ removetime = -1
 
 sprpriority = 6
 
-scale = 0.07,0.07
+scale = 0.09,0.09
 ownpal = 1
 
 
@@ -140,7 +140,7 @@ removetime = -1
 
 sprpriority = -5
 
-scale = 0.07,0.07
+scale = 0.09,0.09
 ownpal = 1
 
 
@@ -186,7 +186,7 @@ removetime = -1
 
 sprpriority = 6
 
-scale = 0.07,0.07
+scale = 0.09,0.09
 ownpal = 1
 
 
@@ -290,7 +290,7 @@ removetime = -2
 
 sprpriority = -5
 
-scale = 0.07,0.07
+scale = 0.09,0.09
 ownpal = 1
 
 [State 7030, Destroy]

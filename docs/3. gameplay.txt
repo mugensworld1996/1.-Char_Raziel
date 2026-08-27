@@ -1,178 +1,376 @@
 # Raziel — Gameplay Guide
+# MUGEN 1.0
+# ESTADO ACTUAL DEL PERSONAJE: 26/08/2026
 
-## Información general
+===============================================================================
+IMPORTANTE
+===============================================================================
 
-- Personaje: Raziel
-- Juego de origen: Legacy of Kain: Soul Reaver
-- Engine: MUGEN 1.0
-- Estado: En desarrollo
+Este archivo describe solamente controles y comportamientos que YA existen en
+el código actual.
 
----
+Las ideas de controles futuros pertenecen a:
 
-# Controles básicos
+    4. labs.txt
 
-## Layout estándar MUGEN
+El moveset todavía está en desarrollo. Algunos controles actuales provienen de
+la plantilla/base anterior y serán reemplazados o reorganizados más adelante.
 
-```txt
-x  y  z
-a  b  c
-      s
-```
 
-| Botón | Acción |
-|---|---|
-| x | Golpe débil |
-| y | Golpe medio |
-| z | Golpe fuerte |
-| a | Patada débil |
-| b | Patada media |
-| c | Patada fuerte |
-| s | Taunt |
+===============================================================================
+1. INFORMACIÓN GENERAL
+===============================================================================
 
----
+Personaje:
+    Raziel
 
-# Movimiento
+Origen:
+    Legacy of Kain: Soul Reaver
 
-| Acción | Input |
-|---|---|
-| Caminar | ← / → |
-| Saltar | ↑ |
-| Dash adelante | → → |
-| Dash atrás | ← ← |
-| Air Jump | En el aire + ↑ |
+Engine:
+    MUGEN 1.0
 
----
+Estado:
+    En desarrollo
 
-# Taunt
 
-| Acción | Input |
-|---|---|
-| Taunt | s |
+===============================================================================
+2. LAYOUT MUGEN
+===============================================================================
 
----
+    x  y  z
+    a  b  c
+          s
 
-# Throws
 
-| Acción | Input |
-|---|---|
-| Throw | Cerca del enemigo + →/← + y o z |
+===============================================================================
+3. SISTEMA DE ESPADA ACTUAL
+===============================================================================
 
----
+Raziel INICIA cada round con la espada física equipada.
 
-# Normales de pie
+Estado interno:
 
-| Movimiento | Input |
-|---|---|
-| Light Punch | x |
-| Medium Punch | y |
-| Heavy Punch | z |
-| Light Kick | a |
-| Medium Kick | b |
-| Heavy Kick | c |
+    var(20)=0
+        -> espada equipada
 
----
+El Stand con espada utiliza:
 
-# Normales agachado
+    Action 1000
 
-| Movimiento | Input |
-|---|---|
-| Crouch Light Punch | ↓ + x |
-| Crouch Medium Punch | ↓ + y |
-| Crouch Heavy Punch | ↓ + z |
-| Crouch Light Kick | ↓ + a |
-| Crouch Medium Kick | ↓ + b |
-| Crouch Heavy Kick | ↓ + c |
 
----
+-----------------------------
+CLAVAR LA ESPADA
+-----------------------------
 
-# Normales aéreas
+Input:
 
-| Movimiento | Input |
-|---|---|
-| Jump Light Punch | Aire + x |
-| Jump Medium Punch | Aire + y |
-| Jump Heavy Punch | Aire + z |
-| Jump Light Kick | Aire + a |
-| Jump Medium Kick | Aire + b |
-| Jump Heavy Kick | Aire + c |
+    Y + Z
 
----
+Condiciones actuales:
+- Raziel debe estar de pie.
+- Raziel debe tener control.
+- var(20)=0.
 
-# Sistema Soul Reaver
+Resultado:
 
-El Soul Reaver es un sistema visual persistente implementado mediante overlays y palettes independientes.
+    State 2100
+    Anim 1005
 
-Actualmente:
+Raziel clava la espada.
 
-- Se muestra en idle
-- Walk
-- Crouch
-- Transiciones de crouch
+Durante la animación se crea la espada/grieta como objeto independiente.
 
-Cada palette puede utilizar una variante distinta del Reaver.
+Al terminar:
 
----
+    var(20)=1
 
-# Palettes disponibles
+Raziel queda sin espada.
 
-| Palette | Archivo |
-|---|---|
-| Palette 1 | raziel.act |
-| Palette 2 | raziel2.act |
-| Palette 3 | raziel3.act |
 
----
+-----------------------------
+RECUPERAR / DESCLAVAR
+-----------------------------
 
-# Estado actual del gameplay
+Input:
 
-Actualmente el personaje posee:
+    Y + Z
 
-- Normales de pie
-- Normales agachado
-- Normales aéreos
-- Throws
-- Dash
-- Air jump
-- Taunt
-- Sistema visual Soul Reaver
+Condiciones actuales:
+- Raziel debe estar de pie.
+- Raziel debe tener control.
+- var(20)=1.
 
----
+Resultado:
 
-# Contenido pendiente
+    State 2110
+    Anim 1006
 
-Aún faltan:
+Al terminar:
 
-- Special moves
-- Supers
-- IA
-- Más movilidad
-- Más Reavers
-- FX avanzados
-- Balance general
+    var(20)=0
 
----
+Raziel vuelve al Stand con espada (Action 1000).
 
-# Compatibilidad
+LIMITACIÓN ACTUAL:
+Todavía NO existe una comprobación de distancia a la espada. Actualmente puede
+iniciarse la recuperación sin necesidad de caminar hasta el punto donde quedó
+clavada.
 
-Este personaje fue diseñado específicamente para:
 
-- MUGEN 1.0
+===============================================================================
+4. EFECTO VISUAL DE LA ESPADA CLAVADA
+===============================================================================
 
-No se garantiza funcionamiento correcto en:
+Cuando la espada queda clavada:
 
-- WinMUGEN
-- MUGEN 1.1
+    grieta estable (6502)
+        -> detrás de los personajes
 
----
+    espada (6505)
+        -> delante de los personajes
 
-# Instalación
+    frente de grieta (6504)
+        -> delante de la espada
 
-1. Copiar `Raziel_Char/` dentro de `chars/`
-2. Abrir `data/select.def`
-3. Agregar:
+Esto genera el efecto visual de que la espada atraviesa el suelo.
 
-```txt
-Raziel_Char/raziel
-```
+Al recuperar la espada:
+- La espada independiente desaparece.
+- La grieta queda temporalmente.
+- Después se ejecuta la animación de cierre 6503.
 
-4. Iniciar MUGEN y seleccionar el personaje.
+
+===============================================================================
+5. MOVIMIENTO ACTUAL
+===============================================================================
+
+Caminar:
+    ← / →
+
+Saltar:
+    ↑
+
+Run / Dash adelante:
+    → →
+
+Hop / Dash atrás:
+    ← ←
+
+Air Jump:
+    NO disponible actualmente.
+
+Motivo técnico:
+    airjump.num = 0
+
+
+===============================================================================
+6. TAUNT
+===============================================================================
+
+Taunt:
+
+    s
+
+
+===============================================================================
+7. THROW
+===============================================================================
+
+Throw:
+
+    Cerca del enemigo
+    +
+    mantener → o ←
+    +
+    y o z
+
+State:
+
+    800
+
+
+===============================================================================
+8. NORMALES ACTUALES DE PIE
+===============================================================================
+
+IMPORTANTE:
+Estos controles son todavía parte del moveset heredado / sin espada.
+
+Input          State
+--------------------
+x              200
+→ + c          210
+c              220
+a              230
+b              240
+
+El State 250 existe en el CNS como Standing Strong Kick, pero el CMD actual no
+tiene una entrada normal independiente que lo invoque directamente.
+
+Actualmente los normales heredados todavía no están totalmente bloqueados por
+modo de espada. El moveset completo con espada todavía no existe.
+
+
+===============================================================================
+9. COMBOS ACTUALES
+===============================================================================
+
+Cadena desde State 200:
+
+    200
+      + x con contacto
+        -> 265
+
+
+Cadena de patada:
+
+    230
+      + a con contacto
+        -> 255
+          + a con contacto
+            -> 260
+
+
+Cadena desde State 240:
+
+    240
+      + b con contacto
+        -> 270
+          + b con contacto
+            -> 275
+
+
+===============================================================================
+10. NORMALES AGACHADO ACTUALES
+===============================================================================
+
+↓ + x
+    -> State 400
+
+↓ + y
+    -> State 410
+
+↓ + z
+    -> State 420
+
+↓ + a
+    -> State 430
+
+↓ + b
+    -> State 440
+
+↓ + c
+    -> State 450
+
+
+===============================================================================
+11. NORMALES AÉREOS ACTUALES
+===============================================================================
+
+Aire + x
+    -> State 600
+
+Aire + y
+    -> State 610
+
+Aire + z
+    -> State 620
+
+Aire + a
+    -> State 630
+
+Aire + b
+    -> State 640
+
+Aire + c
+    -> State 650
+
+
+===============================================================================
+12. REAVERS
+===============================================================================
+
+El sistema nuevo de Reavers todavía NO está habilitado en el gameplay actual.
+
+La variable ya existe:
+
+    var(21)
+
+y está preparada para 9 modos, pero los archivos:
+
+    reavers_1.cns
+    reavers_2.cns
+    reavers_3.cns
+
+siguen vacíos/desactivados en el DEF actual.
+
+Por tanto, NO documentar todavía Fire, Air, Water, Earth, Lightning, Light,
+Dark o Spirit como poderes jugables.
+
+
+===============================================================================
+13. PALETTES ACTUALES
+===============================================================================
+
+Palette 1:
+    razielAzul1.act
+
+Palette 2:
+    razielVerde1.act
+
+Palette 3:
+    razielAzul2.act
+
+Palette 4:
+    razielVerde2.act
+
+
+===============================================================================
+14. ESTADO ACTUAL DEL GAMEPLAY
+===============================================================================
+
+YA FUNCIONA:
+
+- Raziel inicia con espada.
+- Stand con espada.
+- Clavar espada con Y+Z.
+- Recuperar espada con Y+Z.
+- Grieta y espada persistentes como objeto independiente.
+- Cierre posterior de la grieta.
+- Normales heredados de pie.
+- Normales agachado.
+- Normales aéreos.
+- Combos heredados.
+- Throw.
+- Taunt.
+- Run adelante.
+- Hop atrás.
+
+TODAVÍA NO FUNCIONA / NO ESTÁ IMPLEMENTADO:
+
+- Moveset completo con espada.
+- Walk específico con espada.
+- Crouch específico con espada.
+- Jump específico con espada.
+- Ataques de espada.
+- Recuperación limitada por distancia.
+- Lanzamiento de espada.
+- Reavers elementales jugables.
+- Specials y Supers definitivos.
+- IA.
+- Air Jump.
+
+
+===============================================================================
+15. COMPATIBILIDAD
+===============================================================================
+
+Diseñado para:
+
+    MUGEN 1.0
+
+No se garantiza compatibilidad con:
+
+    WinMUGEN
+    MUGEN 1.1

@@ -1,0 +1,54 @@
+============================================================
+MUGEN CHARACTER STRUCTURE
+============================================================
+
+Proyecto:
+D:\Cantoral\3. Personal\2. Proyectos\1. Mugen\2. Chars\1. Char_Raziel\Raziel_Char
+
+Generado:
+mi‚. 26/08/2026 22:25:26.98
+
+============================================================
+
+Listado de rutas de carpetas
+El n£mero de serie del volumen es 000000D0 B64D:88B4
+D:\CANTORAL\3. PERSONAL\2. PROYECTOS\1. MUGEN\2. CHARS\1. CHAR_RAZIEL\RAZIEL_CHAR
+|   raziel.def
+|   
++---assets
+|   |   raziel.air
+|   |   raziel.sff
+|   |   raziel.snd
+|   |   
+|   \---storyboards
+|       \---intro
+|               intro.def
+|               intro.sff
+|               
++---logic
+|   +---combat
+|   |       sword.cns
+|   |       unarmed.cns
+|   |       weapon.cns
+|   |       
+|   +---commands
+|   |       raziel.cmd
+|   |       
+|   +---core
+|   |       constants.cns
+|   |       core.cns
+|   |       system.cns
+|   |       
+|   \---reavers
+|           reavers_1.cns
+|           reavers_2.cns
+|           reavers_3.cns
+|           
+\---palette
+        1mr.act
+        2sr.act
+        razielAzul1.act
+        razielAzul2.act
+        razielVerde1.act
+        razielVerde2.act
+        

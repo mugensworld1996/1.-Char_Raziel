@@ -90,6 +90,307 @@ value = 8
 ignorehitpause = 1
 
 
+;==============================================================================
+; SPECTRAL REAVER
+; var(21) = 0
+;==============================================================================
+
+
+;==============================================================================
+; STAND - AZUL
+; Paletas 1 y 3
+;==============================================================================
+
+[State -2, Spectral Stand Blue]
+type = Explod
+
+triggerall = var(20) != 0
+triggerall = var(21) = 0
+triggerall = Anim = 0
+triggerall = PalNo = 1 || PalNo = 3
+
+trigger1 = NumExplod(7000) = 0
+
+ID = 7000
+anim = 7000
+
+postype = p1
+pos = -63,-27
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+[State -2, Remove Spectral Stand Blue]
+type = RemoveExplod
+
+trigger1 = var(20) = 0
+trigger2 = var(21) != 0
+trigger3 = Anim != 0
+trigger4 = !(PalNo = 1 || PalNo = 3)
+
+ID = 7000
+
+;==============================================================================
+; STAND - VERDE
+; Paletas 2 y 4
+;==============================================================================
+
+[State -2, Spectral Stand Green]
+type = Explod
+
+triggerall = var(20) != 0
+triggerall = var(21) = 0
+triggerall = Anim = 0
+triggerall = PalNo = 2 || PalNo = 4
+
+trigger1 = NumExplod(7100) = 0
+
+ID = 7100
+anim = 7100
+
+postype = p1
+pos = -63,-27
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+[State -2, Remove Spectral Stand Green]
+type = RemoveExplod
+
+trigger1 = var(20) = 0
+trigger2 = var(21) != 0
+trigger3 = Anim != 0
+trigger4 = !(PalNo = 2 || PalNo = 4)
+
+ID = 7100
+
+;==============================================================================
+; CROUCH - AZUL
+;==============================================================================
+
+[State -2, Spectral Crouch Blue]
+type = Explod
+
+triggerall = var(20) != 0
+triggerall = var(21) = 0
+
+triggerall = Anim = 11
+triggerall = PalNo = 1 || PalNo = 3
+
+trigger1 = NumExplod(7005) = 0
+
+ID = 7005
+anim = 7005
+
+postype = p1
+pos = 51,-32
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+[State -2, Remove Spectral Crouch Blue]
+type = RemoveExplod
+
+trigger1 = var(20) = 0
+trigger2 = var(21) != 0
+trigger3 = Anim != 11
+trigger4 = !(PalNo = 1 || PalNo = 3)
+
+ID = 7005
+
+[State -2, Spectral Crouch Green]
+type = Explod
+
+triggerall = var(20) != 0
+triggerall = var(21) = 0
+
+triggerall = Anim = 11
+triggerall = PalNo = 2 || PalNo = 4
+
+trigger1 = NumExplod(7105) = 0
+
+ID = 7105
+anim = 7105
+
+postype = p1
+pos = 51,-32
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+[State -2, Remove Spectral Crouch Green]
+type = RemoveExplod
+
+trigger1 = var(20) = 0
+trigger2 = var(21) != 0
+trigger3 = Anim != 11
+trigger4 = !(PalNo = 2 || PalNo = 4)
+
+ID = 7105
+
+[State -2, Spectral CrouchStart Blue]
+type = Explod
+
+triggerall = var(20) != 0
+triggerall = var(21) = 0
+
+triggerall = Anim = 10
+triggerall = PalNo = 1 || PalNo = 3
+
+trigger1 = NumExplod(7006) = 0
+
+ID = 7006
+anim = 7006
+
+postype = p1
+pos = -58,-23
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+[State -2, Remove Spectral CrouchStart Blue]
+type = RemoveExplod
+
+trigger1 = var(20) = 0
+trigger2 = var(21) != 0
+trigger3 = Anim != 10
+trigger4 = !(PalNo = 1 || PalNo = 3)
+
+ID = 7006
+
+[State -2, Spectral CrouchStart Green]
+type = Explod
+
+triggerall = var(20) != 0
+triggerall = var(21) = 0
+
+triggerall = Anim = 10
+triggerall = PalNo = 2 || PalNo = 4
+
+trigger1 = NumExplod(7106) = 0
+
+ID = 7106
+anim = 7106
+
+postype = p1
+pos = -58,-23
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+[State -2, Remove Spectral CrouchStart Green]
+type = RemoveExplod
+
+trigger1 = var(20) = 0
+trigger2 = var(21) != 0
+trigger3 = Anim != 10
+trigger4 = !(PalNo = 2 || PalNo = 4)
+
+ID = 7106
+
+
+[State -2, Spectral CrouchEnd Blue]
+type = Explod
+
+triggerall = var(20) != 0
+triggerall = var(21) = 0
+
+triggerall = Anim = 12
+triggerall = PalNo = 1 || PalNo = 3
+
+trigger1 = NumExplod(7007) = 0
+
+ID = 7007
+anim = 7007
+
+postype = p1
+pos = -58,-23
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+[State -2, Remove Spectral CrouchEnd Blue]
+type = RemoveExplod
+
+trigger1 = var(20) = 0
+trigger2 = var(21) != 0
+trigger3 = Anim != 12
+trigger4 = !(PalNo = 1 || PalNo = 3)
+
+ID = 7007
+
+
+[State -2, Spectral CrouchEnd Green]
+type = Explod
+
+triggerall = var(20) != 0
+triggerall = var(21) = 0
+
+triggerall = Anim = 12
+triggerall = PalNo = 2 || PalNo = 4
+
+trigger1 = NumExplod(7107) = 0
+
+ID = 7107
+anim = 7107
+
+postype = p1
+pos = -58,-23
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+[State -2, Remove Spectral CrouchEnd Green]
+type = RemoveExplod
+
+trigger1 = var(20) = 0
+trigger2 = var(21) != 0
+trigger3 = Anim != 12
+trigger4 = !(PalNo = 2 || PalNo = 4)
+
+ID = 7107
+
+
 
 ;==============================================================================
 ; STATE -3

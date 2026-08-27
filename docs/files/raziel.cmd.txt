@@ -524,35 +524,6 @@ triggerall = statetype = S
 
 trigger1 = ctrl
 
-;==============================================================================
-; CAMBIO DE REAVER
-; Solo disponible cuando Raziel NO tiene la espada
-;==============================================================================
-
-[State -1, Next Reaver]
-type = VarSet
-v = 21
-value = ifelse(var(21) >= 8, 0, var(21) + 1)
-
-; Solo sin espada
-triggerall = var(20) != 0
-
-; Z solo
-triggerall = command = "z"
-
-; No permitir que Y+Z cambie tambien el Reaver
-triggerall = command != "sword_switch"
-
-; Por ahora solo estando de pie
-triggerall = statetype = S
-triggerall = ctrl
-
-; No interferir con Throw adelante/atras
-triggerall = command != "holdfwd"
-triggerall = command != "holdback"
-
-trigger1 = 1
-
 ;===========================================================================
 ;---------------------------------------------------------------------------
 
