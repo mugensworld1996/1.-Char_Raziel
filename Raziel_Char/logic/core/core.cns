@@ -56,6 +56,128 @@ trigger1 = !alive
 value = 5050
 ctrl = 0
 
+;==============================================================================
+; WALK
+; Override de State 20 de common1.cns
+;==============================================================================
+
+[Statedef 20]
+type = S
+movetype = I
+physics = S
+ctrl = 1
+sprpriority = 0
+
+
+;------------------------------------------------------------------------------
+; VELOCIDAD
+;------------------------------------------------------------------------------
+
+
+; Caminar hacia adelante
+[State 20, Walk Forward Velocity]
+type = VelSet
+trigger1 = command = "holdfwd"
+x = Const(velocity.walk.fwd.x)
+
+
+; Caminar hacia atras
+[State 20, Walk Back Velocity]
+type = VelSet
+trigger1 = command = "holdback"
+x = Const(velocity.walk.back.x)
+
+
+
+;==============================================================================
+; ANIMACIONES CON ESPADA
+; var(20) = 0
+;==============================================================================
+
+
+;------------------------------------------------------------------------------
+; Adelante con espada
+;------------------------------------------------------------------------------
+
+[State 20, Sword Walk Forward]
+type = ChangeAnim
+
+triggerall = var(20) = 0
+triggerall = command = "holdfwd"
+
+trigger1 = Anim != 1010
+
+value = 1010
+
+
+;------------------------------------------------------------------------------
+; Atras con espada
+;------------------------------------------------------------------------------
+
+[State 20, Sword Walk Back]
+type = ChangeAnim
+
+triggerall = var(20) = 0
+triggerall = command = "holdback"
+
+trigger1 = Anim != 1015
+
+value = 1015
+
+
+
+;==============================================================================
+; ANIMACIONES SIN ESPADA
+; var(20) != 0
+;==============================================================================
+
+
+;------------------------------------------------------------------------------
+; Adelante sin espada
+;------------------------------------------------------------------------------
+
+[State 20, Unarmed Walk Forward]
+type = ChangeAnim
+
+triggerall = var(20) != 0
+triggerall = command = "holdfwd"
+
+trigger1 = Anim != 20
+
+value = 20
+
+
+;------------------------------------------------------------------------------
+; Atras sin espada
+;------------------------------------------------------------------------------
+
+[State 20, Unarmed Walk Back]
+type = ChangeAnim
+
+triggerall = var(20) != 0
+triggerall = command = "holdback"
+
+trigger1 = Anim != 21
+
+value = 21
+
+
+
+;==============================================================================
+; TERMINAR CAMINATA
+;==============================================================================
+
+[State 20, End Walk]
+type = ChangeState
+
+triggerall = command != "holdfwd"
+triggerall = command != "holdback"
+
+trigger1 = 1
+
+value = 0
+ctrl = 1
+
 
 ;---------------------------------------------------------------------------
 ; Throw - Attempt
