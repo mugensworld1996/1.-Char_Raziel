@@ -511,18 +511,33 @@ trigger1 = ctrl
 
 ;------------------------------------------------------------------------------
 ; RECUPERAR ESPADA
-; SIN ESPADA -> CON ESPADA
+; Solo si Raziel esta cerca de la Soul Reaver clavada
 ;------------------------------------------------------------------------------
 
 [State -1, Take Sword]
 type = ChangeState
 value = 2110
 
+; Input
 triggerall = command = "sword_switch"
-triggerall = var(20) = 1
-triggerall = statetype = S
 
-trigger1 = ctrl
+; La espada debe estar clavada
+triggerall = var(20) = 1
+
+; Raziel debe estar de pie y con control
+triggerall = statetype = S
+triggerall = ctrl
+
+; El Helper de la espada debe existir
+triggerall = NumHelper(6500) > 0
+
+; Debe estar realmente en el estado "clavada"
+triggerall = Helper(6500), StateNo = 7010
+
+; Raziel debe estar cerca de la espada
+triggerall = Abs(Helper(6500), Pos X - Pos X) <= 20
+
+trigger1 = 1
 
 ;==============================================================================
 ; CAMBIO DE REAVER

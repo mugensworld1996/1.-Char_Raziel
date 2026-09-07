@@ -15,21 +15,19 @@ cmd=logic/commands/raziel.cmd
 
 cns=logic/core/constants.cns
 st=logic/core/core.cns
-st0=logic/core/system.cns
-
-
 
 stcommon=common1.cns
 pal1=palette/razielAzul1.act
 pal2=palette/razielVerde1.act
 pal3=palette/razielAzul2.act
 pal4=palette/razielVerde2.act
-st1=logic/combat/unarmed.cns
-st2=logic/combat/sword.cns
-st3=logic/combat/weapon.cns
-;st4=logic/reavers/reavers_1.cns
-;st5=logic/reavers/reavers_2.cns
-;st6=logic/reavers/reavers_3.cns
+st1=logic/core/system.cns
+st2=logic/combat/unarmed.cns
+st3=logic/combat/sword.cns
+st4=logic/combat/weapon.cns
+;st5=logic/reavers/reavers_1.cns
+;st6=logic/reavers/reavers_2.cns
+;st7=logic/reavers/reavers_3.cns
 
 [Arcade]
 intro.storyboard=assets/storyboards/intro/intro.def

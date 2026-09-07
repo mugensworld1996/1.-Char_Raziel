@@ -6,12 +6,12 @@ Proyecto:
 D:\Cantoral\3. Personal\2. Proyectos\1. Mugen\2. Chars\1. Char_Raziel\Raziel_Char
 
 Generado:
-mi‚. 26/08/2026 22:25:26.98
+dom. 06/09/2026 14:03:45.27
 
 ============================================================
 
 Listado de rutas de carpetas
-El n£mero de serie del volumen es 000000D0 B64D:88B4
+El n£mero de serie del volumen es 00000035 B64D:88B4
 D:\CANTORAL\3. PERSONAL\2. PROYECTOS\1. MUGEN\2. CHARS\1. CHAR_RAZIEL\RAZIEL_CHAR
 |   raziel.def
 |   
