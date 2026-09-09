@@ -36,6 +36,24 @@
 
 [Statedef -2]
 
+;==============================================================================
+; GIRO GLOBAL CON ESPADA
+;==============================================================================
+
+[State -2, Sword Turn Override]
+type = ChangeAnim
+
+; Solo cuando la espada esta equipada
+triggerall = var(20) = 0
+
+; Si MUGEN intenta ejecutar el giro normal
+trigger1 = Anim = 5
+
+; Usar nuestro giro con espada
+value = 8
+
+ignorehitpause = 1
+
 
 ;------------------------------------------------------------------------------
 ; INICIALIZACION

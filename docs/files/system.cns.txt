@@ -390,6 +390,122 @@ trigger4 = !(PalNo = 2 || PalNo = 4)
 
 ID = 7107
 
+;==============================================================================
+; SPECTRAL REAVER - WALK AZUL
+; Paletas 1 y 3
+;==============================================================================
+
+[State -2, Spectral Walk Blue]
+type = Explod
+
+; Solo SIN espada
+triggerall = var(20) != 0
+
+; Solo Spectral Reaver
+triggerall = var(21) = 0
+
+; State 20 = caminando
+triggerall = StateNo = 20
+
+; Paletas azules
+triggerall = PalNo = 1 || PalNo = 3
+
+trigger1 = NumExplod(7001) = 0
+
+ID = 7001
+
+; OJO:
+; Seguimos usando la animacion visual 7000.
+; 7001 es solamente el ID del Explod.
+anim = 7000
+
+postype = p1
+pos = -56,-33
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+;------------------------------------------------------------------------------
+; ELIMINAR SPECTRAL WALK AZUL
+;------------------------------------------------------------------------------
+
+[State -2, Remove Spectral Walk Blue]
+type = RemoveExplod
+
+; Raziel vuelve a tener espada
+trigger1 = var(20) = 0
+
+; Cambió a otro Reaver
+trigger2 = var(21) != 0
+
+; Ya no esta caminando
+trigger3 = StateNo != 20
+
+; Cambió a una paleta que no utiliza Spectral azul
+trigger4 = !(PalNo = 1 || PalNo = 3)
+
+ID = 7001
+
+
+;==============================================================================
+; SPECTRAL REAVER - WALK VERDE
+; Paletas 2 y 4
+;==============================================================================
+
+[State -2, Spectral Walk Green]
+type = Explod
+
+; Solo SIN espada
+triggerall = var(20) != 0
+
+; Solo Spectral Reaver
+triggerall = var(21) = 0
+
+; State 20 = caminando
+triggerall = StateNo = 20
+
+; Paletas verdes
+triggerall = PalNo = 2 || PalNo = 4
+
+trigger1 = NumExplod(7101) = 0
+
+ID = 7101
+
+; Igual que en tu sistema antiguo:
+; 7101 es el ID del Explod.
+; La animacion visual utilizada es 7100.
+anim = 7100
+
+postype = p1
+pos = -56,-33
+
+bindtime = -1
+removetime = -1
+
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+
+;------------------------------------------------------------------------------
+; ELIMINAR SPECTRAL WALK VERDE
+;------------------------------------------------------------------------------
+
+[State -2, Remove Spectral Walk Green]
+type = RemoveExplod
+
+trigger1 = var(20) = 0
+trigger2 = var(21) != 0
+trigger3 = StateNo != 20
+trigger4 = !(PalNo = 2 || PalNo = 4)
+
+ID = 7101
+
 
 
 ;==============================================================================
