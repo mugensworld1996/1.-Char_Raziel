@@ -1,6 +1,7 @@
 # Raziel — MUGEN LABS
 # Lluvia de ideas / alcance futuro
 # MUGEN 1.0
+# ACTUALIZADO: 09/09/2026
 
 ===============================================================================
 REGLA PRINCIPAL DE ESTE ARCHIVO
@@ -28,65 +29,82 @@ convertirse automáticamente en requisitos sin revisar primero el estado actual
 del proyecto.
 
 
+
 ===============================================================================
-1. CONCEPTO CENTRAL: DOS FORMAS PRINCIPALES
+1. CONCEPTO CENTRAL: DOS FORMAS
 ===============================================================================
 
-Raziel está diseñado alrededor de dos grandes formas de combate:
+A) CON ESPADA FÍSICA
+B) SIN ESPADA FÍSICA / REAVER
 
-    A) CON ESPADA FÍSICA
-    B) SIN ESPADA FÍSICA
+La arquitectura actual ya distingue ambas formas mediante var(20).
+
+La intención futura es que cada una termine sintiéndose como un moveset propio.
 
 
------------------------------
+-------------------------------------------------------------------------------
 A) CON ESPADA
------------------------------
+-------------------------------------------------------------------------------
 
-Raziel comienza el combate con la Soul Reaver física en la mano.
+Ya existen:
+- Stand.
+- Walk Forward.
+- Walk Back.
+- Giro.
+- Clavar.
+- Recuperar.
 
-La intención es que esta forma sea casi un moveset completo propio:
+Todavía por desarrollar:
+- Stand -> Crouch.
+- Crouch.
+- Crouch -> Stand.
+- Jump Start.
+- Jump neutral.
+- Jump adelante.
+- Jump atrás.
+- Peak / Fall.
+- Landing.
+- Run / Dash.
+- Guard propio si fuera necesario.
+- GetHit propio si fuera necesario.
+- Normales.
+- Combos.
+- Specials.
+- Supers.
 
-- Stand propio.
-- Walk propio.
-- Crouch propio.
-- Jump propio.
-- Run / movilidad propia.
-- Ataques de pie con espada.
-- Ataques agachado con espada.
-- Ataques aéreos con espada.
-- Combos de espada.
-- Specials de espada.
-- Posibles Supers relacionados con la espada.
 
-La espada física NO debe tratarse como un simple overlay cuando Raziel la
-sostiene. Los sprites de la forma con espada deben contener físicamente la
-espada.
-
-
------------------------------
+-------------------------------------------------------------------------------
 B) SIN ESPADA
------------------------------
+-------------------------------------------------------------------------------
 
-Cuando Raziel deja la espada, entra al moveset corporal / Reaver.
+El selector de Reaver ya utiliza Z.
 
-Diseño de botones deseado para esta forma:
+Por tanto, el diseño futuro de botones debe respetar esa decisión.
+
+Base deseada:
 
     A = puños
     B = patadas
     C = garras
-    X = combinaciones de puños y patadas
-    Y = habilidad única del Reaver activo
-    Z = segunda habilidad única del Reaver activo
+    X = combinaciones / técnicas corporales
+    Y = ataque o habilidad principal del Reaver
+    Z = cambiar Reaver
 
-Este mapeo es OBJETIVO FUTURO.
-No confundirlo con el CMD heredado que funciona actualmente.
+Los ataques adicionales del Reaver pueden utilizar:
+- direcciones + Y;
+- motion commands + Y/Z;
+- combinaciones;
+- Specials;
+- Supers.
+
+La distribución exacta todavía está abierta.
 
 
 ===============================================================================
-2. SISTEMA DE 9 REAVERS
+2. LOS 9 REAVERS
 ===============================================================================
 
-Cuando Raziel está SIN la espada física podrá cambiar entre 9 Reavers:
+var(21):
 
     0 = Spectral
     1 = Fire
@@ -98,349 +116,370 @@ Cuando Raziel está SIN la espada física podrá cambiar entre 9 Reavers:
     7 = Dark
     8 = Spirit
 
-Variable reservada:
+El ciclo con Z ya está implementado en el sistema actual.
 
-    var(21)
+Lo pendiente es convertir cada valor en un Reaver jugable completo.
 
-Distribución de código planificada:
 
-    reavers_1.cns
-        Spectral
-        Fire
-        Air
+-------------------------------------------------------------------------------
+DISTRIBUCIÓN DE ARCHIVOS
+-------------------------------------------------------------------------------
 
-    reavers_2.cns
-        Water
-        Earth
-        Lightning
+reavers_1.cns
+    Spectral
+    Fire
+    Air
 
-    reavers_3.cns
-        Light
-        Dark
-        Spirit
+reavers_2.cns
+    Water
+    Earth
+    Lightning
+
+reavers_3.cns
+    Light
+    Dark
+    Spirit
+
+
+-------------------------------------------------------------------------------
+RANGOS RESERVADOS
+-------------------------------------------------------------------------------
+
+3000-3099 Spectral
+3100-3199 Fire
+3200-3299 Air
+
+3300-3399 Water
+3400-3499 Earth
+3500-3599 Lightning
+
+3600-3699 Light
+3700-3799 Dark
+3800-3899 Spirit
 
 
 ===============================================================================
-3. SPECTRAL REAVER: AZUL Y VERDE
+3. SPECTRAL
 ===============================================================================
 
-Spectral es UN SOLO modo lógico:
+Spectral ya tiene una primera integración visual global.
+
+Estado:
 
     var(21)=0
 
-Pero tendrá dos versiones visuales:
+Dos apariencias:
 
-    Spectral azul
-        -> para palettes azules de Raziel
+    Azul
+        palettes 1 / 3
 
-    Spectral verde
-        -> para palettes verdes de Raziel
+    Verde
+        palettes 2 / 4
 
-NO son dos Reavers distintos.
-NO deben ocupar dos valores de var(21).
+Son el mismo Reaver lógico.
 
-La selección de color debería depender de PalNo / palette.
+YA EXISTE:
+- Stand visual.
+- Walk visual.
+- Crouch visual.
+- Stand -> Crouch visual.
+- Crouch -> Stand visual.
 
-Sprites fuente existentes históricamente:
-
-    01. Spectral Reaver 1
-        azul
-
-    02. Spectral Reaver 2
-        verde
+FUTURO:
+- Reaver durante Jump.
+- Reaver durante ataques.
+- FX de activación.
+- Feedback de cambio.
+- Ataques propios de Spectral.
+- Specials.
+- Supers.
 
 
 ===============================================================================
-4. ESPADA CLAVADA — MECÁNICA FUTURA
+4. ESPADA CLAVADA — CARGA / ABSORCIÓN
 ===============================================================================
 
-La base visual para clavar y recuperar ya existe, pero quedan mecánicas por
-desarrollar.
+La espada ya puede permanecer físicamente clavada en el escenario.
 
-Objetivo:
+Idea futura:
 
-Cuando la espada queda clavada en el suelo:
+Mientras permanece clavada podría absorber:
 
-- Debe permanecer físicamente en el lugar donde Raziel la dejó.
-- Raziel debe poder alejarse.
-- La espada debería empezar a absorber poder / energía / almas.
-- Cuanto más tiempo permanezca clavada, mayor podría ser su carga.
-- Al recuperar la espada, la carga podría aumentar:
-  - daño;
-  - alcance;
-  - poder de un ataque;
-  - duración de un buff;
-  - FX;
-  - propiedades especiales.
+- energía;
+- poder;
+- almas;
+- recurso.
 
 Variable reservada:
 
-    var(22) = carga de la espada
+    var(22)
 
-La fórmula, límites y balance todavía están pendientes.
+Posibles efectos al recuperarla:
+
+- aumentar daño;
+- aumentar alcance;
+- potenciar un ataque;
+- aplicar un buff temporal;
+- cambiar FX;
+- habilitar propiedades especiales.
+
+Pendiente:
+- fórmula;
+- máximo;
+- duración;
+- balance;
+- feedback visual.
 
 
 ===============================================================================
-5. RECOGER LA ESPADA — RESTRICCIÓN FUTURA
+5. RECUPERACIÓN DE ESPADA — MEJORAS FUTURAS
 ===============================================================================
 
-Actualmente el prototipo permite iniciar la recuperación sin comprobar
-distancia.
+La restricción básica de proximidad YA está implementada.
 
-Diseño deseado:
+Condición actual:
 
-    La espada existe
+    Helper 6500 existe
     +
-    Raziel está suficientemente cerca
+    Helper State 7010
     +
-    input de recuperación
-        ->
-    Anim 1006 / State 2110
+    distancia horizontal <= 20
 
-Si Raziel está lejos:
+Ideas para mejorar la recuperación:
 
-    no debe poder recogerla.
-
-La distancia definitiva todavía está pendiente de balance.
+- Autoalinear ligeramente a Raziel con la espada.
+- Girar automáticamente a Raziel si llega desde el lado contrario.
+- Añadir un pequeño snap de posición antes de Action 1006.
+- Crear feedback si intenta recogerla estando demasiado lejos.
+- Diferenciar recuperación de espada clavada y espada caída.
+- Balancear la distancia definitiva.
 
 
 ===============================================================================
 6. LANZAR LA ESPADA
 ===============================================================================
 
-Raziel debería tener una segunda forma de separarse de la espada:
+Segunda forma futura de separarse de la espada:
 
-    LANZARLA AL OPONENTE
+    LANZAMIENTO
 
-Posible comportamiento:
+Estados ya reservados:
 
-CASO 1 — golpe exitoso:
-- La espada impacta.
-- Después puede terminar clavada en el suelo.
-- Puede comenzar a cargar energía.
+    var(20)=2
+        lanzada / volando
 
-CASO 2 — ataque bloqueado:
-- La espada no debería clavarse.
-- Puede rebotar.
-- Cae al suelo.
+    var(20)=3
+        caída en el suelo
 
-CASO 3 — falla:
-- La espada sigue su trayectoria.
-- Puede caer al suelo.
-- El comportamiento final se decidirá durante implementación.
+Posibles casos:
 
-Estados futuros de var(20) ya reservados:
+CASO 1 — IMPACTA
+- causa daño;
+- después puede clavarse;
+- podría comenzar a cargar energía.
 
-    2 = lanzada / volando
-    3 = caída en el suelo
+CASO 2 — ES BLOQUEADA
+- no debería clavarse directamente;
+- puede rebotar;
+- puede caer.
 
-weapon.cns deberá encargarse de la espada independiente.
+CASO 3 — FALLA
+- continúa trayectoria;
+- cae;
+- queda disponible para recuperación.
+
+weapon.cns debe seguir siendo el dueño lógico de la espada independiente.
 
 
 ===============================================================================
 7. MOVILIDAD CON ESPADA
 ===============================================================================
 
-Próxima gran tanda de sprites / animaciones:
+YA EXISTE:
 
-- Stand con espada.
-  YA existe Action 1000.
+    Action 1000 = Stand
+    Action 1010 = Walk Forward
+    Action 1015 = Walk Back
+    Action 8    = Turn
 
-- Stand -> Crouch con espada.
-- Crouch con espada.
-- Crouch -> Stand con espada.
-- Walk Forward con espada.
-- Walk Back con espada.
-- Jump Start con espada.
-- Salto neutral con espada.
-- Salto adelante con espada.
-- Salto atrás con espada.
-- Peak / caída con espada.
-- Landing con espada.
-- Run / Dash con espada.
-- Guard con espada si visualmente lo requiere.
-- GetHit con espada si visualmente lo requiere.
+SIGUIENTE TANDA:
 
-Idea de implementación:
-Conservar los States comunes cuando sea posible y seleccionar una animación
-distinta según var(20), en vez de duplicar toda la física innecesariamente.
+- Stand -> Crouch.
+- Crouch.
+- Crouch -> Stand.
+- Jump Start.
+- Jump neutral.
+- Jump forward.
+- Jump back.
+- Peak / Fall.
+- Landing.
+- Run / Dash.
+- Guard.
+- GetHit.
+
+Principio de implementación:
+
+Conservar States comunes siempre que sea posible y elegir animación según
+var(20), evitando duplicar física innecesariamente.
 
 
 ===============================================================================
 8. ATAQUES CON ESPADA
 ===============================================================================
 
-La forma con espada debe tener ataques propios.
+La forma con espada debe terminar teniendo ataques propios.
 
-Rangos propuestos previamente para organizar states:
+Rangos propuestos:
 
-    1200-1299 = ataques de pie con espada
-    1400-1499 = ataques agachado con espada
-    1600-1699 = ataques aéreos con espada
+    1200-1299
+        ataques de pie
 
-La numeración definitiva puede ajustarse si el código lo requiere, pero debe
-evitar colisiones con States existentes.
+    1400-1499
+        ataques agachado
 
-El moveset de espada debería sentirse como una forma distinta de Raziel, no como
-los mismos golpes con un sprite diferente.
+    1600-1699
+        ataques aéreos
+
+El moveset debería sentirse diferente al corporal, no como los mismos ataques
+con una espada dibujada.
 
 
 ===============================================================================
 9. ATAQUES DE REAVER
 ===============================================================================
 
-Cuando Raziel esté sin espada:
+Como Z ahora cambia el Reaver, el diseño anterior de usar Y y Z como dos ataques
+simples debe revisarse.
 
-    A/B/C/X
-        -> base corporal compartida
+Posible dirección:
 
-    Y/Z
-        -> dependen de var(21)
+    Y
+        ataque principal del Reaver
 
-Ejemplo conceptual:
+    Z
+        siguiente Reaver
 
-    var(21)=0
-        Y/Z -> Spectral
+    dirección + Y
+        técnica secundaria
 
-    var(21)=1
-        Y/Z -> Fire
+    QCF + Y / QCF + Z
+        Specials
 
-    var(21)=2
-        Y/Z -> Air
+    otros motions
+        técnicas avanzadas
 
-    ...
-
-Cada Reaver podrá tener:
-- dos ataques principales;
-- comandos adicionales;
-- Specials;
-- Supers;
-- propiedades elementales;
-- FX propios.
-
-Todavía no hay lista definitiva de ataques.
+Esto es todavía diseño futuro.
 
 
 ===============================================================================
-10. CAMBIO ENTRE REAVERS
+10. FEEDBACK DEL CAMBIO DE REAVER
 ===============================================================================
 
-Todavía debe diseñarse el control definitivo para pasar entre:
+Ideas:
 
-    Spectral
-    Fire
-    Air
-    Water
-    Earth
-    Lightning
-    Light
-    Dark
-    Spirit
+- símbolo del elemento;
+- sonido;
+- destello;
+- aura;
+- nombre corto;
+- transición de color;
+- Helper visual;
+- pequeña animación exclusiva.
 
-Y/Z están pensados como ataques propios del Reaver cuando Raziel está sin
-espada, por lo que el selector debe evitar conflictos con esos botones.
-
-Se puede estudiar como referencia el Raziel antiguo de Dave Rattlz, que utilizó
-variables, Helpers y states para cambios de Reaver, pero NO se debe copiar su
-arquitectura automáticamente.
+Debe evitarse una transición que interrumpa demasiado el combate.
 
 
 ===============================================================================
-11. IDEAS DE MUGEN LABS
+11. IDEAS MUGEN LABS
 ===============================================================================
 
-Estas ideas nacieron como exploraciones creativas y NO están confirmadas.
-
------------------------------
+-------------------------------------------------------------------------------
 DUAL BLADES RAZIEL
------------------------------
+-------------------------------------------------------------------------------
 
-¿Y si Raziel pudiera empuñar dos espadas / dos Reavers?
+Posible modo de dos espadas / dos Reavers.
 
-Posibles efectos:
-- Más combos aéreos.
-- Presión constante.
-- Estilo más agresivo.
+Ideas:
+- presión;
+- combos aéreos;
+- estilo agresivo.
 
-
------------------------------
-ADQUISICIÓN / EVOLUCIÓN DE PODER
------------------------------
-
-¿Y si Raziel pudiera crecer durante el combate?
-
-Ejemplo:
-- Nivel 1.
-- Nivel 2.
-- Nivel 3.
-- Nivel 4.
-
-Posibles recompensas:
-- Más daño.
-- Más velocidad.
-- Nuevas propiedades.
-- Nuevas técnicas.
-
-Debe existir riesgo/recompensa si alguna vez se implementa.
+No implementado.
 
 
------------------------------
-REAVER EN EL SUELO / ONDAS DE ALMA
------------------------------
+-------------------------------------------------------------------------------
+EVOLUCIÓN DE PODER
+-------------------------------------------------------------------------------
 
-Expandir la mecánica de clavar la espada para que pueda generar:
+Raziel podría crecer durante el combate:
+
+    Nivel 1
+    Nivel 2
+    Nivel 3
+    Nivel 4
+
+Posibles beneficios:
+- daño;
+- velocidad;
+- nuevas técnicas;
+- nuevas propiedades.
+
+Debe existir riesgo/recompensa.
+
+
+-------------------------------------------------------------------------------
+REAVER CLAVADA / ONDAS DE ALMA
+-------------------------------------------------------------------------------
+
+La espada clavada podría generar:
 
 - ondas expansivas;
 - control de espacio;
 - castigos;
-- absorción de almas / energía.
+- absorción de energía;
+- zonas de peligro.
 
-La grieta y Helper actuales pueden servir como base técnica, pero estas
-propiedades todavía NO existen.
+El Helper actual puede servir como base.
 
 
------------------------------
+-------------------------------------------------------------------------------
 FASE ESPECTRAL
------------------------------
+-------------------------------------------------------------------------------
 
-Posible transformación temporal a una fase espectral.
+Posible transformación temporal:
 
-Ideas:
-- Atravesar determinados proyectiles.
-- Evasión especial.
-- Movimientos únicos.
-- Duración limitada.
-- Coste de recurso.
+- evasión;
+- atravesar ciertos proyectiles;
+- movilidad especial;
+- duración limitada;
+- coste de recurso.
 
 
------------------------------
+-------------------------------------------------------------------------------
 ALMAS ABSORBIDAS
------------------------------
+-------------------------------------------------------------------------------
 
-Raziel podría absorber el alma del oponente para obtener temporalmente algo de
-él.
+Raziel podría absorber el alma del rival y obtener temporalmente:
 
-Ideas:
-- Copia de movimiento.
-- Super personalizado.
-- Propiedad especial.
-- Estrategias dependientes del rival.
+- una propiedad;
+- un movimiento;
+- un Super;
+- una ventaja especial.
 
-Mecánica compleja. No implementada.
+Mecánica compleja.
 
 
------------------------------
+-------------------------------------------------------------------------------
 MODO DEVORADOR
------------------------------
+-------------------------------------------------------------------------------
 
-Posible estado temporal de gran poder.
+Posible modo temporal:
 
-Ideas:
-- Más daño.
-- Más alcance.
-- Movimientos exclusivos.
-- Alto consumo de alma / recurso.
-- Duración corta.
+- más daño;
+- más alcance;
+- técnicas exclusivas;
+- alto consumo;
+- duración corta.
 
 
 ===============================================================================
@@ -454,21 +493,19 @@ Ideas:
 - Supers.
 - IA completa.
 - Cinemáticas.
-- Intro y endings adicionales.
+- Intro / endings adicionales.
 - FX avanzados.
 - Sistema de almas.
-- Efectos visuales por carga de espada.
+- Efectos por carga de espada.
 - Diferentes niveles de carga.
-- Sonidos y feedback de selección de Reaver.
-- Símbolos / Helpers visuales al cambiar de Reaver.
 - Balance competitivo posterior.
 
 
 ===============================================================================
-13. REFERENCIA: RAZIEL DE DAVE RATTLZ
+13. REFERENCIA: DAVE RATTLZ
 ===============================================================================
 
-Archivos antiguos estudiados:
+Archivos antiguos estudiados como referencia:
 
 - Raziel.cns
 - Reavers.cns
@@ -478,76 +515,56 @@ Archivos antiguos estudiados:
 - Raziel.cmd
 - common1.cns personalizado
 
-Puntos útiles como referencia:
+Puntos útiles:
+- variables para Reavers;
+- Helpers;
+- separación de lógica;
+- símbolos y FX;
+- integración de poderes.
 
-- Uso de variable para Reaver activo.
-- Uso de Helpers.
-- Separación entre Reavers y Reaver Spells.
-- Símbolos / FX asociados a cambios.
-- common1 modificado para integrar lógica propia.
+Decisión actual:
 
-Decisión del proyecto actual:
-
-NO copiar el common1 personalizado de Dave.
+NO copiar su common1 personalizado.
 
 Se mantiene:
 
     stcommon=common1.cns
 
-usando el common1 estándar de MUGEN y sobrescribiendo únicamente los States
-necesarios dentro del propio Raziel.
+y se sobrescriben solamente los States necesarios.
 
 
 ===============================================================================
 14. PRINCIPIO DE ARQUITECTURA
 ===============================================================================
 
-Mantener esta separación:
+CORE
+    cómo existe y funciona Raziel globalmente
 
-    CORE
-        constants.cns
-        core.cns
-        system.cns
+COMBAT
+    cómo pelea y cómo funciona la espada física
 
-    COMBAT
-        unarmed.cns
-        sword.cns
-        weapon.cns
+REAVERS
+    qué poderes aporta el Reaver activo
 
-    REAVERS
-        reavers_1.cns
-        reavers_2.cns
-        reavers_3.cns
-
-Interpretación:
-
-    CORE
-        cómo existe y funciona Raziel globalmente
-
-    COMBAT
-        cómo pelea / cómo funciona la espada física
-
-    REAVERS
-        qué poderes tiene el Reaver activo
-
-Evitar archivos gigantes cuando exista una razón real para separar lógica, pero
-también evitar fragmentar innecesariamente el proyecto.
+Evitar:
+- archivos gigantes sin necesidad;
+- fragmentación excesiva;
+- cambiar el significado de variables ya acordadas.
 
 
 ===============================================================================
 15. PUNTO DE CONTINUACIÓN IDEAL
 ===============================================================================
 
-El sistema de clavar / recuperar ya tiene una base funcional.
-
-La siguiente fase recomendada es:
-
-1. Crear locomoción completa con espada.
-2. Integrar esas animaciones a los States comunes mediante var(20).
-3. Después crear ataques de espada.
-4. Luego limitar la recuperación por distancia.
-5. Después implementar lanzamiento de espada.
-6. Más adelante conectar Spectral y los demás Reavers.
-7. Finalmente desarrollar specials, supers, IA y balance.
+1. Completar Crouch con espada.
+2. Completar Jump con espada.
+3. Completar Run / Dash con espada.
+4. Crear normales y combos de espada.
+5. Mejorar recuperación visual / alineación.
+6. Implementar lanzamiento.
+7. Implementar carga.
+8. Desarrollar los ocho Reavers restantes.
+9. Specials / Supers.
+10. IA y balance.
 
 Este orden es una guía, no una obligación.

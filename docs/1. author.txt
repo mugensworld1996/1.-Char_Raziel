@@ -218,32 +218,37 @@ A partir de esa base se están desarrollando:
 Implementado actualmente:
 
 - MUGEN 1.0.
-- Stand con espada física.
-- Sistema global de estado de espada mediante variables.
+- Stand con Soul Reaver física.
+- Caminata adelante y atrás con espada.
+- Giro propio con espada.
+- Sistema global de estado de espada.
 - Transición con espada → sin espada.
 - Transición sin espada → con espada.
-- Animación para clavar la espada.
-- Animación para recuperarla.
-- Helper para representar la espada fuera de Raziel.
+- Animación para clavar y recuperar la espada.
+- Helper independiente para representar la espada clavada.
+- Recuperación limitada por proximidad real al Helper de la espada.
 - Grieta de aparición, grieta estable y desaparición.
-- Composición por capas: grieta detrás, espada delante de personajes y borde frontal delante de la espada.
-- Normales heredados del moveset sin espada.
-- Throws, taunt y estados base heredados de la plantilla actual.
+- Composición por capas para simular profundidad.
+- Selector de Reaver mediante `var(21)`.
+- Cambio de Reaver con Z cuando Raziel está sin espada.
+- Spectral Reaver azul/verde conectado visualmente.
+- Spectral visible en Stand, Walk y transiciones básicas de Crouch.
+- Normales heredados del moveset corporal.
+- Throws, Taunt, Run y estados base heredados.
 
 Todavía faltan, entre otras cosas:
 
-- Locomoción completa con espada.
-- Normales con espada.
-- Ataques agachado con espada.
-- Ataques aéreos con espada.
-- Sistema completo de los 9 Reavers.
+- Crouch completo con espada.
+- Jump completo con espada.
+- Run / Dash con espada.
+- Ataques propios con espada.
+- Los ocho Reavers restantes con poderes jugables.
 - Specials y Supers.
 - IA.
 - Balance.
 - FX avanzados.
-- Sistema definitivo para lanzar la espada.
-- Sistema de carga / absorción de energía de la espada.
-- Restricción de distancia para recoger la espada.
+- Lanzamiento de la espada.
+- Sistema de carga / absorción de energía.
 
 ## Planes futuros
 

@@ -1,133 +1,221 @@
 # Raziel (Legacy of Kain)
 
-![Raziel](Sprites_v2.0/main.png)
+![Raziel](Sprites/main.png)
 
 ---
 
 ## Información
 
-- **Personaje:** Raziel  
-- **Origen:** Legacy of Kain: Soul Reaver  
-- **Versión del personaje:** Raziel Azul (forma espectral)  
-- **Autor del proyecto:** Mugen's World  
-- **Estado:** En desarrollo (etapa muy temprana)
+- **Personaje:** Raziel
+- **Origen:** Legacy of Kain: Soul Reaver
+- **Engine:** MUGEN 1.0
+- **Autor del proyecto:** Mugen's World
+- **Estado:** En desarrollo activo
+- **Versión actual:** Raziel espectral con sistema de Soul Reaver física
 
 ---
 
 ## Descripción
 
-Este proyecto busca recrear a **Raziel**, protagonista de la saga *Legacy of Kain*, como un personaje jugable para **MUGEN**.
+Este proyecto busca recrear a **Raziel**, protagonista de *Legacy of Kain: Soul Reaver*, como un personaje jugable para **MUGEN 1.0**.
 
-Esta versión corresponde a **Raziel en su forma espectral (Azul)**.  
-En el futuro se planea desarrollar también una **versión vampiro** del personaje.
+La versión actual está construida alrededor de dos formas principales:
 
-El proyecto actualmente se encuentra en una etapa **muy temprana de desarrollo**, por lo que muchas mecánicas, habilidades y animaciones aún están en proceso de creación.
+- **Con Soul Reaver física:** Raziel sostiene la espada dentro de sus propios sprites.
+- **Sin espada física:** Raziel entra al sistema corporal / Reaver.
+
+El objetivo es que ambas formas evolucionen hasta convertirse en estilos de combate claramente diferenciados.
 
 ---
 
-## Desarrollo
+## Estado actual
 
-Los sprites de este personaje están siendo **creados desde cero** utilizando diferentes herramientas de IA y procesos de edición.
+🚧 **Proyecto en desarrollo activo.**
 
-Proceso general utilizado:
+### Ya implementado
 
-1. Creación de sprites base
-2. Conversión a estilo 3D
-3. Generación de animaciones
-4. Conversión a video
-5. Extracción de frames
-6. Conversión final a sprites BMP para MUGEN
+- Stand con espada física — **Action 1000**.
+- Caminata hacia adelante con espada — **Action 1010**.
+- Caminata hacia atrás con espada — **Action 1015**.
+- Giro con espada — **Action 8**.
+- Cambio de forma con **Y + Z**.
+- Animación para clavar la espada — **Action 1005 / State 2100**.
+- Animación para recuperar la espada — **Action 1006 / State 2110**.
+- Soul Reaver clavada como objeto independiente mediante **Helper 6500**.
+- Grieta animada de aparición, estado estable y desaparición.
+- Composición por capas para simular profundidad:
+  - grieta detrás de los personajes;
+  - espada delante de los personajes;
+  - borde frontal de la grieta delante de la espada.
+- Recuperación de la espada limitada por proximidad.
+- La espada solo puede recuperarse cuando su Helper existe y está en el estado de espada clavada.
+- Sistema global de estado de espada mediante `var(20)`.
+- Selector de Reaver mediante `var(21)`.
+- Cambio de Reaver con **Z** cuando Raziel está sin la espada.
+- Spectral Reaver conectado visualmente como modo `var(21)=0`.
+- Spectral azul para palettes 1 y 3.
+- Spectral verde para palettes 2 y 4.
+- Spectral visual en Stand, Walk y transiciones de Crouch.
+- Moveset corporal heredado todavía disponible.
+- Throws, Taunt, Run y Hop Back heredados.
 
-Herramientas utilizadas durante el proceso:
+### Todavía en desarrollo
+
+- Crouch completo con espada.
+- Jump completo con espada.
+- Run / Dash con espada.
+- Guard y GetHit específicos con espada, si fueran necesarios.
+- Normales y combos propios con espada.
+- Ataques aéreos y agachados con espada.
+- Fire, Air, Water, Earth, Lightning, Light, Dark y Spirit Reaver jugables.
+- Ataques y Specials propios de cada Reaver.
+- Lanzamiento de la espada.
+- Sistema de carga / absorción de energía de la espada.
+- Specials y Supers definitivos.
+- IA.
+- Balance y FX avanzados.
+
+---
+
+## Controles actuales destacados
+
+### Soul Reaver física
+
+**Y + Z**
+
+- Con espada equipada: Raziel la clava.
+- Sin espada: Raziel la recupera solamente si está suficientemente cerca de la espada clavada.
+
+### Cambio de Reaver
+
+**Z**
+
+Disponible cuando Raziel está **sin la espada física**, de pie, con control y sin mantener adelante/atrás.
+
+El ciclo interno es:
+
+`Spectral → Fire → Air → Water → Earth → Lightning → Light → Dark → Spirit → Spectral`
+
+Actualmente solo **Spectral** tiene representación visual conectada. Los demás modos están reservados para desarrollo posterior.
+
+---
+
+## Arquitectura
+
+El proyecto separa la lógica en tres bloques principales:
+
+```text
+CORE
+├── constants.cns
+├── core.cns
+└── system.cns
+
+COMBAT
+├── unarmed.cns
+├── sword.cns
+└── weapon.cns
+
+REAVERS
+├── reavers_1.cns
+├── reavers_2.cns
+└── reavers_3.cns
+```
+
+Interpretación:
+
+- **CORE:** comportamiento global de Raziel.
+- **COMBAT:** combate corporal, forma con espada y espada física independiente.
+- **REAVERS:** poderes específicos de cada Reaver.
+
+Los archivos `reavers_1.cns`, `reavers_2.cns` y `reavers_3.cns` siguen reservados para la implementación completa de los nueve Reavers.
+
+---
+
+## Desarrollo del personaje
+
+Los sprites están siendo creados mediante una combinación de herramientas de IA y edición manual.
+
+### Pipeline general
+
+1. Creación de sprites base.
+2. Conversión a estilo 3D.
+3. Generación de animaciones.
+4. Conversión a video.
+5. Extracción de frames.
+6. Edición y limpieza manual.
+7. Conversión a BMP.
+8. Importación al SFF.
+9. Creación de AIR, CLSN y lógica MUGEN.
+
+### Herramientas utilizadas
 
 - ChatGPT
 - Grok
 - Gemini
 - A2E
 - Vidu
-- Herramientas de extracción de frames
-
-Este proceso permite generar animaciones completamente nuevas para el personaje.
+- VLC
+- Fighter Factory Classic
+- Herramientas de edición de imagen, BMP y palettes ACT
 
 ---
 
-## Base del código
+## Base y referencias
 
-Parte del código utilizado para este proyecto proviene de un personaje jugable previo en 2D que me fue proporcionado por:
+El proyecto parte de la plantilla clásica de MUGEN / Elecbyte y estudia implementaciones anteriores de Raziel realizadas por otros autores.
 
-- **Dark**
+Referencias históricas:
+
+- **Raziel Seylos**
 - **Dave Rattlz**
 
-Ese personaje ya era jugable, pero aún faltaban implementar varias funcionalidades y más variantes del **Soul Reaver**.
-
-A partir de ese trabajo base se están desarrollando nuevas mecánicas, sprites y animaciones.
-
----
-
-## Créditos
-
-**Autor del proyecto**
-- Mugen's World
-
-**Base del personaje**
-- Raziel Seylos  
-- Dave Rattlz
-
-Gracias por compartir el trabajo original que permitió iniciar este proyecto.
-
----
-
-## Estado del proyecto
-
-🚧 Proyecto en desarrollo temprano  
-
-Actualmente el personaje se encuentra **en una fase muy inicial**, por lo que aún faltan:
-
-- Movimientos
-- Animaciones
-- Habilidades
-- IA
-- Variantes del Reaver
-
-El desarrollo irá avanzando progresivamente.
+El personaje de Dave Rattlz se utiliza principalmente como referencia de estudio para ideas sobre Reavers, Helpers, States y organización de lógica. La arquitectura actual fue reorganizada para soportar las dos formas principales del personaje.
 
 ---
 
 ## Filosofía del proyecto
 
-El espíritu de este proyecto sigue la filosofía clásica de la comunidad **MUGEN**:
-
 > MUGEN es de la comunidad para la comunidad.
 
-Este proyecto es completamente libre para la comunidad.
+El contenido de este proyecto se comparte libremente para:
+
+- usar;
+- estudiar;
+- modificar;
+- editar;
+- redistribuir;
+- crear versiones derivadas;
+- reutilizar sprites y recursos dentro de otros proyectos.
+
+Este proyecto es **fan-made y sin fines comerciales**.
 
 ---
 
-## Uso y distribución
+## Créditos
 
-Se permite libremente:
+### Proyecto actual
 
-- Usar este personaje
-- Modificarlo
-- Editarlo
-- Crear versiones derivadas
-- Usar los sprites
-- Integrarlo en otros proyectos
+- Mugen's World
 
-No hay restricciones de uso.
+### Base / referencias del personaje
 
-Este proyecto es **completamente libre y comunitario**.
+- Raziel Seylos
+- Dave Rattlz
 
-Bajo ninguna circunstancia se cobra por este contenido.
+### Juego original
+
+- Crystal Dynamics
+- Eidos Interactive
+
+Raziel, Legacy of Kain, Soul Reaver y sus elementos asociados pertenecen a sus respectivos propietarios.
 
 ---
 
-## Futuro del proyecto
+## Documentación
 
-Planes a futuro:
+- `1. author.txt` — autoría, filosofía, créditos y contexto del proyecto.
+- `2. developer.txt` — estado técnico real, arquitectura, variables, States y sistemas implementados.
+- `3. gameplay.txt` — controles y comportamiento que funcionan actualmente.
+- `4. labs.txt` — ideas, alcance futuro y mecánicas todavía no implementadas.
 
-- Versión **Raziel Vampiro**
-- Más habilidades
-- Soul Reaver adicionales
-- Mejoras de animación
-- Más efectos visuales
+**No asumir que una idea de `4. labs.txt` ya existe en el código.**

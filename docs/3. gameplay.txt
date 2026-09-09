@@ -97,29 +97,163 @@ Input:
     Y + Z
 
 Condiciones actuales:
-- Raziel debe estar de pie.
-- Raziel debe tener control.
-- var(20)=1.
 
-Resultado:
+- Raziel está de pie.
+- Raziel tiene control.
+- var(20)=1.
+- Existe Helper 6500.
+- El Helper está en State 7010.
+- Raziel está suficientemente cerca de la espada.
+
+Distancia horizontal actual:
+
+    <= 20
+
+Si Raziel está lejos:
+
+    Y+Z NO inicia la recuperación.
+
+Si está cerca:
 
     State 2110
-    Anim 1006
+    Action 1006
 
 Al terminar:
 
     var(20)=0
 
-Raziel vuelve al Stand con espada (Action 1000).
+Raziel vuelve a tener la espada.
 
-LIMITACIÓN ACTUAL:
-Todavía NO existe una comprobación de distancia a la espada. Actualmente puede
-iniciarse la recuperación sin necesidad de caminar hasta el punto donde quedó
-clavada.
+===============================================================================
+4. MOVIMIENTO CON ESPADA
+===============================================================================
+
+Stand:
+
+    Action 1000
+
+Caminar adelante:
+
+    mantener →
+
+    Action 1010
+
+Caminar atrás:
+
+    mantener ←
+
+    Action 1015
+
+Giro:
+
+    Action 8
+
+Cuando Raziel tiene la espada, el giro normal de MUGEN se sustituye por la
+animación específica con espada.
 
 
 ===============================================================================
-4. EFECTO VISUAL DE LA ESPADA CLAVADA
+5. MOVIMIENTO SIN ESPADA
+===============================================================================
+
+Stand:
+
+    Action 0
+
+Caminar adelante:
+
+    Action 20
+
+Caminar atrás:
+
+    Action 21
+
+Cuando Spectral está activo, su overlay acompaña estas animaciones.
+
+
+===============================================================================
+6. CAMBIO DE REAVER
+===============================================================================
+
+Disponible cuando Raziel está SIN la espada.
+
+Input:
+
+    Z
+
+Condiciones actuales:
+
+- var(20)!=0.
+- Raziel está de pie.
+- Raziel tiene control.
+- No está manteniendo adelante.
+- No está manteniendo atrás.
+- No se está ejecutando Y+Z.
+
+Ciclo:
+
+    Spectral
+      ↓ Z
+    Fire
+      ↓ Z
+    Air
+      ↓ Z
+    Water
+      ↓ Z
+    Earth
+      ↓ Z
+    Lightning
+      ↓ Z
+    Light
+      ↓ Z
+    Dark
+      ↓ Z
+    Spirit
+      ↓ Z
+    Spectral
+
+Estado interno:
+
+    var(21)=0..8
+
+IMPORTANTE:
+Actualmente solo Spectral tiene visual conectado.
+Al pasar a Fire/Air/etc. todavía no aparecen sus poderes definitivos.
+
+
+===============================================================================
+7. SPECTRAL REAVER
+===============================================================================
+
+Spectral corresponde a:
+
+    var(21)=0
+
+Solo aparece si Raziel está sin espada:
+
+    var(20)!=0
+
+Color:
+
+    Palettes 1 y 3
+        -> Spectral azul
+
+    Palettes 2 y 4
+        -> Spectral verde
+
+Presentación visual actualmente conectada:
+
+- Stand.
+- Walk.
+- Crouch.
+- Stand -> Crouch.
+- Crouch -> Stand.
+
+Spectral azul y verde son el MISMO Reaver lógico.
+
+
+===============================================================================
+8. ESPADA CLAVADA — EFECTO VISUAL
 ===============================================================================
 
 Cuando la espada queda clavada:
@@ -133,54 +267,55 @@ Cuando la espada queda clavada:
     frente de grieta (6504)
         -> delante de la espada
 
-Esto genera el efecto visual de que la espada atraviesa el suelo.
+Esto genera una falsa sensación de profundidad.
 
-Al recuperar la espada:
-- La espada independiente desaparece.
-- La grieta queda temporalmente.
-- Después se ejecuta la animación de cierre 6503.
+Al recuperar:
+
+- desaparece la espada independiente;
+- la grieta permanece un momento;
+- después se ejecuta la animación de cierre 6503.
 
 
 ===============================================================================
-5. MOVIMIENTO ACTUAL
+9. MOVIMIENTO GENERAL HEREDADO
 ===============================================================================
-
-Caminar:
-    ← / →
 
 Saltar:
+
     ↑
 
 Run / Dash adelante:
+
     → →
 
 Hop / Dash atrás:
+
     ← ←
 
 Air Jump:
-    NO disponible actualmente.
 
-Motivo técnico:
+    NO disponible.
+
+Motivo:
+
     airjump.num = 0
 
 
 ===============================================================================
-6. TAUNT
+10. TAUNT
 ===============================================================================
 
-Taunt:
+Input:
 
     s
 
 
 ===============================================================================
-7. THROW
+11. THROW
 ===============================================================================
 
-Throw:
+Cerca del rival:
 
-    Cerca del enemigo
-    +
     mantener → o ←
     +
     y o z
@@ -191,11 +326,10 @@ State:
 
 
 ===============================================================================
-8. NORMALES ACTUALES DE PIE
+12. NORMALES HEREDADOS DE PIE
 ===============================================================================
 
-IMPORTANTE:
-Estos controles son todavía parte del moveset heredado / sin espada.
+Estos ataques todavía pertenecen al moveset corporal / heredado.
 
 Input          State
 --------------------
@@ -205,112 +339,83 @@ c              220
 a              230
 b              240
 
-El State 250 existe en el CNS como Standing Strong Kick, pero el CMD actual no
-tiene una entrada normal independiente que lo invoque directamente.
+State 250 existe en el CNS, pero actualmente no tiene una entrada normal
+independiente en CMD.
 
-Actualmente los normales heredados todavía no están totalmente bloqueados por
-modo de espada. El moveset completo con espada todavía no existe.
+LIMITACIÓN:
+El moveset heredado todavía no está totalmente bloqueado cuando Raziel tiene la
+espada. Será reemplazado progresivamente por ataques propios de espada.
 
 
 ===============================================================================
-9. COMBOS ACTUALES
+13. COMBOS HEREDADOS
 ===============================================================================
 
-Cadena desde State 200:
+200
+  + x con contacto
+    -> 265
 
-    200
-      + x con contacto
-        -> 265
-
-
-Cadena de patada:
-
-    230
+230
+  + a con contacto
+    -> 255
       + a con contacto
-        -> 255
-          + a con contacto
-            -> 260
+        -> 260
 
-
-Cadena desde State 240:
-
-    240
+240
+  + b con contacto
+    -> 270
       + b con contacto
-        -> 270
-          + b con contacto
-            -> 275
+        -> 275
 
 
 ===============================================================================
-10. NORMALES AGACHADO ACTUALES
+14. NORMALES AGACHADO HEREDADOS
 ===============================================================================
 
 ↓ + x
-    -> State 400
+    -> 400
 
 ↓ + y
-    -> State 410
+    -> 410
 
 ↓ + z
-    -> State 420
+    -> 420
 
 ↓ + a
-    -> State 430
+    -> 430
 
 ↓ + b
-    -> State 440
+    -> 440
 
 ↓ + c
-    -> State 450
+    -> 450
 
 
 ===============================================================================
-11. NORMALES AÉREOS ACTUALES
+15. NORMALES AÉREOS HEREDADOS
 ===============================================================================
 
 Aire + x
-    -> State 600
+    -> 600
 
 Aire + y
-    -> State 610
+    -> 610
 
 Aire + z
-    -> State 620
+    -> 620
 
 Aire + a
-    -> State 630
+    -> 630
 
 Aire + b
-    -> State 640
+    -> 640
 
 Aire + c
-    -> State 650
+    -> 650
 
 
 ===============================================================================
-12. REAVERS
-===============================================================================
-
-El sistema nuevo de Reavers todavía NO está habilitado en el gameplay actual.
-
-La variable ya existe:
-
-    var(21)
-
-y está preparada para 9 modos, pero los archivos:
-
-    reavers_1.cns
-    reavers_2.cns
-    reavers_3.cns
-
-siguen vacíos/desactivados en el DEF actual.
-
-Por tanto, NO documentar todavía Fire, Air, Water, Earth, Lightning, Light,
-Dark o Spirit como poderes jugables.
-
-
-===============================================================================
-13. PALETTES ACTUALES
+16. PALETTES
 ===============================================================================
 
 Palette 1:
@@ -327,43 +432,52 @@ Palette 4:
 
 
 ===============================================================================
-14. ESTADO ACTUAL DEL GAMEPLAY
+17. ESTADO ACTUAL DEL GAMEPLAY
 ===============================================================================
 
 YA FUNCIONA:
 
-- Raziel inicia con espada.
+- Inicio con espada.
 - Stand con espada.
+- Walk adelante con espada.
+- Walk atrás con espada.
+- Giro con espada.
 - Clavar espada con Y+Z.
-- Recuperar espada con Y+Z.
-- Grieta y espada persistentes como objeto independiente.
-- Cierre posterior de la grieta.
-- Normales heredados de pie.
-- Normales agachado.
-- Normales aéreos.
+- Recuperar espada con Y+Z solamente cerca de ella.
+- Espada persistente en el escenario.
+- Grieta y efecto de profundidad.
+- Spectral azul/verde.
+- Spectral durante Stand, Walk y transiciones básicas de Crouch.
+- Cambio de Reaver con Z.
+- Normales heredados.
 - Combos heredados.
+- Normales agachados heredados.
+- Normales aéreos heredados.
 - Throw.
 - Taunt.
 - Run adelante.
 - Hop atrás.
 
-TODAVÍA NO FUNCIONA / NO ESTÁ IMPLEMENTADO:
+TODAVÍA NO ESTÁ COMPLETO:
 
-- Moveset completo con espada.
-- Walk específico con espada.
-- Crouch específico con espada.
-- Jump específico con espada.
-- Ataques de espada.
-- Recuperación limitada por distancia.
+- Crouch propio con espada.
+- Jump propio con espada.
+- Run / Dash propio con espada.
+- Normales con espada.
+- Ataques agachados con espada.
+- Ataques aéreos con espada.
 - Lanzamiento de espada.
-- Reavers elementales jugables.
-- Specials y Supers definitivos.
+- Carga de espada.
+- Fire / Air / Water / Earth / Lightning / Light / Dark / Spirit jugables.
+- Specials.
+- Supers.
 - IA.
+- Balance.
 - Air Jump.
 
 
 ===============================================================================
-15. COMPATIBILIDAD
+18. COMPATIBILIDAD
 ===============================================================================
 
 Diseñado para:

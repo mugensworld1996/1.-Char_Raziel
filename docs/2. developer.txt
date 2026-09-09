@@ -17,9 +17,6 @@ Los controles que YA funcionan pertenecen a:
 
     3. gameplay.txt
 
-Este archivo está pensado para poder iniciar una conversación nueva con otra IA
-sin depender del historial de chat anterior.
-
 IMPORTANTE:
 - No asumir que un sistema descrito en labs.txt ya está implementado.
 - Antes de modificar lógica, revisar los archivos CNS/CMD/DEF/AIR adjuntos.
@@ -38,21 +35,15 @@ El personaje utiliza:
 
     stcommon=common1.cns
 
-No existe actualmente un common1.cns personalizado dentro del char.
+No se utiliza un common1.cns completo personalizado.
 
-MUGEN utiliza el common1.cns estándar de su carpeta data. Cuando Raziel necesita
-cambiar un State común, se sobrescribe únicamente ese State desde los CNS
-propios.
+Cuando Raziel necesita comportamiento propio en un State común, se sobrescribe
+solamente ese State desde los CNS del personaje.
 
-Ejemplo actual:
+Estados comunes personalizados actualmente relevantes:
 
-    State 0
-
-está redefinido en:
-
-    logic/core/core.cns
-
-De esta forma no es necesario copiar y modificar todo common1.cns.
+    State 0  = Stand
+    State 20 = Walk
 
 
 ===============================================================================
@@ -93,293 +84,428 @@ Raziel_Char/
 │
 └── raziel.def
 
+Responsabilidades:
 
-===============================================================================
-3. RAZIEL.DEF ACTUAL
-===============================================================================
+CORE
+    constants.cns
+        Constantes de tamaño, velocidad y movimiento.
 
-Archivos cargados actualmente:
+    core.cns
+        Overrides de States comunes de Raziel.
+        Actualmente incluye Stand y Walk personalizados.
 
-    sprite=assets/raziel.sff
-    sound=assets/raziel.snd
-    anim=assets/raziel.air
+    system.cns
+        Estado global del personaje:
+        variables, overlays del Spectral, giro global con espada y State -3.
 
-    cmd=logic/commands/raziel.cmd
+COMBAT
+    unarmed.cns
+        Moveset corporal heredado.
 
-    cns=logic/core/constants.cns
-    st=logic/core/core.cns
-    st0=logic/core/system.cns
+    sword.cns
+        Transiciones para clavar y recuperar la Soul Reaver física.
 
-    st1=logic/combat/unarmed.cns
-    st2=logic/combat/sword.cns
-    st3=logic/combat/weapon.cns
+    weapon.cns
+        Helper de la espada cuando está fuera de la mano de Raziel.
 
-    stcommon=common1.cns
-
-Los Reavers ya tienen archivos reservados, pero EN EL DEF ACTUAL están
-comentados/desactivados:
-
-    ;st4=logic/reavers/reavers_1.cns
-    ;st5=logic/reavers/reavers_2.cns
-    ;st6=logic/reavers/reavers_3.cns
-
-Por tanto, esos tres archivos NO forman todavía parte activa de la lógica del
-personaje.
-
-Palettes configuradas:
-
-    pal1=palette/razielAzul1.act
-    pal2=palette/razielVerde1.act
-    pal3=palette/razielAzul2.act
-    pal4=palette/razielVerde2.act
+REAVERS
+    reavers_1.cns
+    reavers_2.cns
+    reavers_3.cns
+        Archivos reservados para poderes específicos de los nueve Reavers.
 
 
 ===============================================================================
-4. RESPONSABILIDAD DE CADA ARCHIVO
+3. VARIABLES GLOBALES
 ===============================================================================
 
------------------------------
-logic/core/constants.cns
------------------------------
+var(20) = ESTADO DE LA ESPADA FÍSICA
 
-Contiene las constantes del personaje:
+    0 = equipada / en la mano
+    1 = clavada en el suelo
+    2 = lanzada / volando
+    3 = caída en el suelo
 
-    [Data]
-    [Size]
-    [Velocity]
-    [Movement]
+var(21) = REAVER ACTIVO
 
-Valores relevantes actuales:
+    0 = Spectral
+    1 = Fire
+    2 = Air
+    3 = Water
+    4 = Earth
+    5 = Lightning
+    6 = Light
+    7 = Dark
+    8 = Spirit
 
-    life = 1000
-    power = 3000
-    attack = 100
-    defence = 100
+var(22) = CARGA DE LA ESPADA
 
-    xscale = 0.09
-    yscale = 0.09
+    Inicializa en 0.
+    La mecánica de carga todavía no está implementada.
 
-    walk.fwd = 2.2
-    walk.back = -2.2
-    run.fwd = 4.6, 0
-    run.back = -4.5,-3.8
+Inicialización por round:
 
-    jump.neu = 0,-9
-    yaccel = 0.30
+    var(20)=0
+    var(21)=0
+    var(22)=0
 
-    airjump.num = 0
+Resultado:
 
-IMPORTANTE:
-Actualmente NO hay Air Jump habilitado porque `airjump.num = 0`.
+    Raziel empieza con la Soul Reaver física equipada.
+    Spectral queda preparado como Reaver base para cuando la espada ya no esté
+    en la mano.
 
 
------------------------------
-logic/core/core.cns
------------------------------
+===============================================================================
+4. CORE.CNS
+===============================================================================
 
-Contiene estados comunes/persistentes propios de Raziel.
+-------------------------------------------------------------------------------
+STATE 0 — STAND
+-------------------------------------------------------------------------------
 
-States actuales:
+Forma con espada:
 
-    0   = Stand personalizado
-    800 = Throw attempt
-    810 = Throw
-    820 = Estado del oponente durante Throw
-    821 = Continuación / caída del oponente
+    var(20)=0
+        -> Action 1000
 
-State 0:
+Forma sin espada:
 
-    var(20) = 0
-        -> usa Anim 1000
-        -> Stand CON espada
+    var(20)!=0
+        -> Action 0
 
-    var(20) != 0
-        -> usa Anim 0
-        -> Stand SIN espada
-
-También conserva lógica relevante del State 0 estándar:
+El State conserva lógica estándar relevante:
 - Reset de velocidad Y.
 - Frenado.
-- Cambio a State 5050 si Raziel muere.
+- Cambio a State 5050 al morir.
+
+Giro:
+- Action 5 sigue siendo el giro estándar sin espada.
+- Action 8 es el giro específico con espada.
+- Cuando Raziel tiene la espada, el sistema sustituye visualmente el giro
+  estándar por Action 8.
 
 
------------------------------
-logic/core/system.cns
------------------------------
+-------------------------------------------------------------------------------
+STATE 20 — WALK
+-------------------------------------------------------------------------------
 
-Es el cerebro global del personaje.
+Se utiliza un único State 20 para ambas formas.
 
-Contiene:
+Velocidades:
 
-    [Statedef -2]
-    [Statedef -3]
+    adelante
+        Const(velocity.walk.fwd.x)
 
-Variables GLOBALES congeladas:
+    atrás
+        Const(velocity.walk.back.x)
 
-    var(20) = ESTADO DE LA ESPADA
+Con espada:
 
-        0 = Equipada / en la mano
-        1 = Clavada en el suelo
-        2 = Lanzada / volando
-        3 = Caída en el suelo
+    holdfwd
+        -> Action 1010
 
-    var(21) = REAVER ACTIVO
+    holdback
+        -> Action 1015
 
-        0 = Spectral
-        1 = Fire
-        2 = Air
-        3 = Water
-        4 = Earth
-        5 = Lightning
-        6 = Light
-        7 = Dark
-        8 = Spirit
+Sin espada:
 
-    var(22) = CARGA DE LA ESPADA
+    holdfwd
+        -> Action 20
 
-        Actualmente se inicializa a 0.
-        La mecánica de carga todavía NO está implementada.
+    holdback
+        -> Action 21
 
-Inicialización actual:
+Al dejar de mantener adelante/atrás:
 
-    RoundState = 0
-        var(20) = 0
-        var(21) = 0
-        var(22) = 0
+    ChangeState -> 0
 
-Esto provoca que Raziel inicie cada round con la espada equipada.
+La física no se duplica por forma; solamente se selecciona la animación
+correspondiente según var(20).
 
-También existen límites de seguridad para var(21):
 
-    menor que 0 -> 0
-    mayor que 8 -> 8
+===============================================================================
+5. SYSTEM.CNS
+===============================================================================
 
-State -3 conserva actualmente el sonido de aterrizaje para States 52 y 106.
+system.cns contiene State -2 y State -3.
+
+-------------------------------------------------------------------------------
+GIRO GLOBAL CON ESPADA
+-------------------------------------------------------------------------------
+
+Cuando:
+
+    var(20)=0
+    Anim=5
+
+el giro normal se sustituye por:
+
+    Action 8
+
+Objetivo:
+que Raziel utilice su giro con espada independientemente de si llega al giro
+desde Stand, Walk o después de una transición como salto/aterrizaje.
+
+
+-------------------------------------------------------------------------------
+SPECTRAL REAVER
+-------------------------------------------------------------------------------
+
+Spectral es:
+
+    var(21)=0
+
+y solamente debe mostrarse cuando:
+
+    var(20)!=0
+
+Es decir:
+
+    sin espada física
+    +
+    Reaver activo = Spectral
+
+Color según palette:
+
+    PalNo 1 o 3
+        -> Spectral azul
+
+    PalNo 2 o 4
+        -> Spectral verde
+
+Recursos visuales actuales:
+
+AZUL
+    Stand:
+        Explod ID 7000
+        anim 7000
+
+    Walk:
+        Explod ID 7001
+        anim 7000
+
+    Crouch:
+        Explod ID 7005
+        anim 7005
+
+    Stand -> Crouch:
+        Explod ID 7006
+        anim 7006
+
+    Crouch -> Stand:
+        Explod ID 7007
+        anim 7007
+
+VERDE
+    Stand:
+        Explod ID 7100
+        anim 7100
+
+    Walk:
+        Explod ID 7101
+        anim 7100
+
+    Crouch:
+        Explod ID 7105
+        anim 7105
+
+    Stand -> Crouch:
+        Explod ID 7106
+        anim 7106
+
+    Crouch -> Stand:
+        Explod ID 7107
+        anim 7107
 
 IMPORTANTE:
-Aunque var(21) ya está definido, el sistema completo de Reavers todavía NO está
-conectado.
+Los IDs 7001 / 7101 identifican los Explods de Walk, pero actualmente reutilizan
+las Actions visuales 7000 / 7100 con otra posición.
+
+State -3 conserva el sonido de aterrizaje para:
+
+    State 52
+    State 106
 
 
------------------------------
-logic/combat/unarmed.cns
------------------------------
+===============================================================================
+6. CMD — CAMBIO DE ESPADA
+===============================================================================
 
-Contiene el moveset heredado SIN ESPADA / combate corporal.
+Comando:
 
-States de ataques actuales:
-
-    200-275 = Normales / cadenas de pie
-    400-450 = Normales agachado
-    600-650 = Normales aéreos
-
-Estados destacados:
-
-    200 = Standing Light Punch
-    210 = Standing Medium Punch
-    220 = Standing Strong Punch
-    230 = Standing Light Kick
-    240 = Standing Medium Kick
-    250 = Standing Strong Kick
-
-Combos / continuaciones:
-
-    255 = 2D
-    260 = 3D
-    265 = 2A
-    270 = 2E
-    275 = 3E
-
-Actualmente este archivo también conserva states generales heredados de la
-plantilla:
-
-    170 = Lose by Time Over
-    180 = Win state decider
-    181 = Win pose
-    190 = Introduction
-    195 = Taunt
-
-Esto es el ESTADO REAL ACTUAL DEL ARCHIVO.
-No mover estos states automáticamente en una conversación nueva sin revisar
-primero el código.
-
-LIMITACIÓN ACTUAL IMPORTANTE:
-Los comandos de ataques heredados todavía no están separados completamente por
-var(20). Por tanto, el moveset definitivo "con espada" aún no reemplaza los
-normales heredados.
+    [Command]
+    name = "sword_switch"
+    command = y+z
+    time = 1
 
 
------------------------------
-logic/combat/sword.cns
------------------------------
+-------------------------------------------------------------------------------
+CLAVAR ESPADA
+-------------------------------------------------------------------------------
 
-Contiene actualmente la transición física entre las dos formas.
+Condiciones:
 
-State 2100:
+    command = "sword_switch"
+    var(20)=0
+    statetype=S
+    ctrl
+
+Resultado:
+
+    State 2100
+
+
+-------------------------------------------------------------------------------
+RECUPERAR ESPADA
+-------------------------------------------------------------------------------
+
+La recuperación ya NO depende solamente de var(20).
+
+Condiciones actuales:
+
+    command = "sword_switch"
+    var(20)=1
+    statetype=S
+    ctrl
+    NumHelper(6500) > 0
+    Helper(6500), StateNo = 7010
+    Abs(Helper(6500), Pos X - Pos X) <= 20
+
+Resultado:
+
+    State 2110
+
+Esto impide recuperar la espada desde cualquier parte del escenario.
+
+La distancia actual usada por el prototipo es:
+
+    20 unidades
+
+
+===============================================================================
+7. CMD — CAMBIO DE REAVER
+===============================================================================
+
+Cuando Raziel está SIN espada puede cambiar de Reaver con:
+
+    Z
+
+Controlador actual:
+
+    var(21) = ifelse(var(21) >= 8, 0, var(21) + 1)
+
+Condiciones:
+
+    var(20)!=0
+    command="z"
+    command!="sword_switch"
+    statetype=S
+    ctrl
+    command!="holdfwd"
+    command!="holdback"
+
+Ciclo:
+
+    0 Spectral
+      ↓
+    1 Fire
+      ↓
+    2 Air
+      ↓
+    3 Water
+      ↓
+    4 Earth
+      ↓
+    5 Lightning
+      ↓
+    6 Light
+      ↓
+    7 Dark
+      ↓
+    8 Spirit
+      ↓
+    0 Spectral
+
+IMPORTANTE:
+El selector ya funciona, pero actualmente solamente Spectral tiene visual
+conectado. Los demás valores no tienen todavía powers/FX definitivos.
+
+
+===============================================================================
+8. SWORD.CNS
+===============================================================================
+
+-------------------------------------------------------------------------------
+STATE 2100 — CLAVAR
+-------------------------------------------------------------------------------
+
+Forma:
+
     CON ESPADA -> SIN ESPADA
 
-    anim = 1005
+Animación:
 
-Durante AnimElem = 8:
+    1005
+
+Durante AnimElem 8:
 
     crea Helper
     ID = 6500
     stateno = 7000
     name = "Physical Soul Reaver"
 
-Al terminar la animación:
+Al terminar:
 
-    var(20) = 1
+    var(20)=1
     ChangeState -> 0
 
-Resultado:
-Raziel termina sin espada y la espada queda representada por el Helper.
 
+-------------------------------------------------------------------------------
+STATE 2110 — RECUPERAR
+-------------------------------------------------------------------------------
 
-State 2110:
+Forma:
+
     SIN ESPADA -> CON ESPADA
 
-    anim = 1006
+Animación:
+
+    1006
 
 Al terminar:
 
-    var(20) = 0
+    var(20)=0
     ChangeState -> 0
 
-Resultado:
-Raziel regresa al Stand con espada (Anim 1000).
-
-IMPORTANTE:
-Actualmente la lógica de recogida NO comprueba distancia a la espada.
-Mientras var(20)=1 y Raziel tenga control en suelo, puede ejecutar el State 2110.
+El State 2110 solamente puede iniciarse desde CMD cuando se cumplen las
+condiciones de proximidad descritas en la sección anterior.
 
 
------------------------------
-logic/combat/weapon.cns
------------------------------
+===============================================================================
+9. WEAPON.CNS
+===============================================================================
 
-Controla la Soul Reaver física cuando está fuera de la mano de Raziel.
-
-Helper:
+Helper lógico:
 
     ID = 6500
 
 States:
 
-    7000 = Aparición de grieta
-    7010 = Espada clavada
-    7020 = Recuperando espada
-    7030 = Grieta residual / desaparición
+    7000 = aparición de la grieta
+    7010 = espada clavada / estable
+    7020 = recuperación
+    7030 = grieta residual / desaparición
 
-Animaciones/Explods utilizados:
+Explods:
 
-    6501 = Aparición de grieta
-    6502 = Grieta estable
-    6503 = Desaparición de grieta
-    6504 = Parte frontal / tapa de la grieta
-    6505 = Espada clavada
+    6501 = aparición de grieta
+    6502 = grieta estable
+    6503 = desaparición de grieta
+    6504 = frente de la grieta
+    6505 = espada clavada
 
-Composición visual actual:
+Capas:
 
     6501 / 6502 / 6503
         sprpriority = -5
@@ -393,163 +519,185 @@ Composición visual actual:
         sprpriority = 6
         -> delante de la espada
 
-Esto crea un falso efecto 3D:
+Resultado:
 
     grieta de fondo
         < personajes
             < espada
                 < frente de grieta
 
+Esto genera el falso efecto 3D de la espada atravesando el suelo.
 
-State 7000:
-- Crea 6501 (grieta apareciendo).
-- Crea 6504 (frente).
-- 6501 usa `removetime = -1` para no desaparecer al terminar su animación y
-  evitar el parpadeo antes de 6502.
-- Cuando Root deja State 2100 -> pasa a State 7010.
 
-State 7010:
+-------------------------------------------------------------------------------
+STATE 7000
+-------------------------------------------------------------------------------
+
+- Crea 6501.
+- Crea 6504.
+- 6501 usa removetime=-1 para evitar el parpadeo.
+- Cuando Root deja State 2100 -> State 7010.
+
+
+-------------------------------------------------------------------------------
+STATE 7010
+-------------------------------------------------------------------------------
+
 - Elimina 6501.
 - Crea 6502.
 - Crea 6505.
-- Mantiene/recrea 6504 según el código actual.
-- Cuando Root entra a State 2110 -> pasa a State 7020.
+- Crea/mantiene 6504.
+- Representa la espada realmente clavada.
+- Es el State exigido por CMD para permitir recuperación.
+- Cuando Root entra a State 2110 -> State 7020.
 
-State 7020:
-- Elimina 6505.
-- Mantiene la grieta durante la animación de recuperar.
-- Cuando Root deja State 2110 -> pasa a State 7030.
 
-State 7030:
+-------------------------------------------------------------------------------
+STATE 7020
+-------------------------------------------------------------------------------
+
+- Elimina la espada independiente 6505.
+- Mantiene la grieta mientras Raziel reproduce Action 1006.
+- Cuando Root deja State 2110 -> State 7030.
+
+
+-------------------------------------------------------------------------------
+STATE 7030
+-------------------------------------------------------------------------------
+
 - Elimina 6504.
 - Mantiene 6502.
-- A Time = 120 elimina 6502 y crea 6503.
-- A Time = 180 destruye el Helper.
-
-Escala actual de los Explods:
-
-    0.09,0.09
-
-Posición actual:
-- Grietas / frente: aproximadamente `pos = 0,6`
-- Espada: aproximadamente `pos = 0,9`
-
-Estas posiciones ya fueron ajustadas visualmente y funcionan con el montaje
-actual.
-
-BUGS YA RESUELTOS EN ESTE SISTEMA:
-1. Aparecía una copia gigante de Raziel al crear el Helper.
-   Se corrigió haciendo invisible la representación propia del Helper.
-2. 6501 terminaba y desaparecía antes de que apareciera 6502.
-   Se corrigió manteniendo 6501 (`removetime = -1`) hasta el cambio al State
-   estable.
-
-
------------------------------
-logic/commands/raziel.cmd
------------------------------
-
-Contiene los inputs y State -1.
-
-Cambio de modo actual:
-
-    [Command]
-    name = "sword_switch"
-    command = y+z
-    time = 1
-
-State -1:
-
-    var(20)=0 + sword_switch
-        -> State 2100
-        -> clavar espada
-
-    var(20)=1 + sword_switch
-        -> State 2110
-        -> recuperar espada
-
-Las dos entradas requieren:
-- Raziel en suelo (`statetype = S`)
-- control (`ctrl`)
-
-
------------------------------
-logic/reavers/reavers_1.cns
-logic/reavers/reavers_2.cns
-logic/reavers/reavers_3.cns
------------------------------
-
-Actualmente están reservados pero VACÍOS y desactivados en raziel.def.
-
-Distribución planificada de los archivos:
-
-    reavers_1.cns
-        Spectral
-        Fire
-        Air
-
-    reavers_2.cns
-        Water
-        Earth
-        Lightning
-
-    reavers_3.cns
-        Light
-        Dark
-        Spirit
-
-Esta distribución es arquitectura acordada, pero los movesets todavía no están
-implementados.
+- Time=120:
+    elimina 6502
+    crea 6503
+- Time=180:
+    DestroySelf
 
 
 ===============================================================================
-5. RAZIEL.AIR — ANIMACIONES RELEVANTES ACTUALES
+10. RAZIEL.AIR — ANIMACIONES RELEVANTES
 ===============================================================================
 
-Animaciones nuevas importantes:
+Forma con espada:
 
-    1000 = Stand con espada
+    8       = giro con espada
+    1000    = Stand con espada
+    1005    = clavando espada
+    1006    = recuperando espada
+    1010    = caminar adelante con espada
+    1015    = caminar atrás con espada
 
-    1005 = Clavando espada
-           CON espada -> SIN espada
+IMPORTANTE:
+Action 8 puede utilizar sprites internos pertenecientes al grupo gráfico 1015.
+El número de Action y el grupo de sprites del SFF no tienen que coincidir.
 
-    1006 = Sacando / recuperando espada
-           SIN espada -> CON espada
+Forma sin espada / común:
 
-La Action 1006 utiliza actualmente los frames del grupo 1005 en orden inverso.
+    0       = Stand
+    5       = giro estándar
+    20      = caminar adelante
+    21      = caminar atrás
 
-Sistema de grieta / espada:
+Spectral visual:
 
-    6501 = aparición de la grieta
-    6502 = grieta estable
-    6503 = desaparición de la grieta
-    6504 = parte frontal de la grieta
-    6505 = espada clavada
+    7000
+    7005
+    7006
+    7007
 
-Action 1:
-    -1,-1, 0,0, 0
+    7100
+    7105
+    7106
+    7107
 
-Se utiliza como animación invisible disponible dentro del AIR.
+Espada / grieta:
 
-El AIR conserva además una gran cantidad de animaciones heredadas, incluidos
-recursos 7000+ de prototipos antiguos del Reaver. Su existencia en el AIR NO
-significa que estén conectados actualmente al sistema nuevo.
+    6501-6505
 
 
 ===============================================================================
-6. FLUJO ACTUAL DEL SISTEMA DE ESPADA
+11. UNARMED.CNS
 ===============================================================================
 
-INICIO DEL ROUND
+Continúa conteniendo el moveset corporal heredado.
 
-    system.cns
-        var(20)=0
-            |
-            v
+States principales:
+
+    200-275 = normales / cadenas de pie
+    400-450 = normales agachado
+    600-650 = normales aéreos
+
+También conserva algunos States generales heredados:
+
+    170
+    180
+    181
+    190
+    195
+
+LIMITACIÓN ACTUAL:
+Los comandos heredados todavía no están completamente separados por var(20).
+Por tanto, el moveset definitivo con espada todavía no reemplaza todos los
+normales antiguos.
+
+
+===============================================================================
+12. REAVERS
+===============================================================================
+
+Distribución reservada:
+
+reavers_1.cns
+    Spectral
+    Fire
+    Air
+
+reavers_2.cns
+    Water
+    Earth
+    Lightning
+
+reavers_3.cns
+    Light
+    Dark
+    Spirit
+
+Rangos reservados:
+
+    3000-3099 Spectral
+    3100-3199 Fire
+    3200-3299 Air
+
+    3300-3399 Water
+    3400-3499 Earth
+    3500-3599 Lightning
+
+    3600-3699 Light
+    3700-3799 Dark
+    3800-3899 Spirit
+
+IMPORTANTE:
+El selector de var(21) ya existe.
+Spectral ya tiene presentación visual global.
+Los CNS específicos de poderes elementales todavía no constituyen el moveset
+definitivo de los nueve Reavers.
+
+
+===============================================================================
+13. FLUJO ACTUAL DE LA ESPADA
+===============================================================================
+
+INICIO
+
+    var(20)=0
+        |
+        v
     State 0
-        Anim 1000
-            |
-            v
+        |
+        v
+    Action 1000
+        |
+        v
     RAZIEL CON ESPADA
 
 
@@ -561,192 +709,100 @@ CLAVAR
     State 2100
       |
       v
-    Anim 1005
+    Action 1005
       |
-      +-- AnimElem 8 --> Helper 6500 / State 7000
-      |
-      v
-    Anim termina
-      |
-      +-- var(20)=1
+      +--> AnimElem 8
+             |
+             v
+        Helper 6500 / State 7000
       |
       v
-    State 0 / Anim 0
+    var(20)=1
       |
       v
-    RAZIEL SIN ESPADA
-
-
-ESPADA CLAVADA
-
-    Helper 6500
+    State 0 / Action 0
       |
-      +-- 6502 detrás
-      +-- 6505 espada delante
-      +-- 6504 delante de la espada
+      v
+    Spectral aparece si var(21)=0
 
 
-RECUPERAR
+ALEJARSE
+
+    Raziel puede caminar lejos de la espada.
+    Helper 6500 conserva la posición real donde quedó clavada.
+
+
+INTENTO DE RECUPERACIÓN
 
     Y+Z
       |
-      v
-    State 2110
+      +-- Helper no existe --------------------> NO
       |
-      v
-    Anim 1006
+      +-- Helper no está en 7010 -------------> NO
       |
-      +-- Helper pasa por State 7020
+      +-- distancia horizontal > 20 ----------> NO
       |
-      v
-    Anim termina
-      |
-      +-- var(20)=0
-      |
-      v
-    State 0 / Anim 1000
-      |
-      v
-    RAZIEL CON ESPADA
-
-
-GRIETA RESIDUAL
-
-    6502 queda en el suelo
-        |
-        | ~120 ticks
-        v
-    6503 desaparición
-        |
-        v
-    Helper se destruye
+      +-- distancia horizontal <= 20 ---------> State 2110
+                                                  |
+                                                  v
+                                               Action 1006
+                                                  |
+                                                  v
+                                               var(20)=0
+                                                  |
+                                                  v
+                                               Action 1000
 
 
 ===============================================================================
-7. CONVENCIONES / RANGOS ACTUALES
+14. ESTADO ACTUAL
 ===============================================================================
-
-Estados heredados / base:
-
-    0-199      comunes
-    200-299    normales de pie / combos sin espada
-    400-499    normales agachado
-    600-699    normales aéreos
-    800-899    throws
-
-Sistema nuevo de espada:
-
-    2100       clavar espada
-    2110       recuperar espada
-
-Helper físico:
-
-    7000-7030  estados del objeto espada/grieta
-
-Animations físicas:
-
-    1000       stand con espada
-    1005       clavar
-    1006       recuperar
-
-    6501-6505  grieta / espada
-
-
-===============================================================================
-8. REAVERS — CONVENCIÓN RESERVADA
-===============================================================================
-
-var(21):
-
-    0 Spectral
-    1 Fire
-    2 Air
-    3 Water
-    4 Earth
-    5 Lightning
-    6 Light
-    7 Dark
-    8 Spirit
-
-Rangos de State propuestos para cuando se implemente:
-
-    3000-3099  Spectral
-    3100-3199  Fire
-    3200-3299  Air
-
-    3300-3399  Water
-    3400-3499  Earth
-    3500-3599  Lightning
-
-    3600-3699  Light
-    3700-3799  Dark
-    3800-3899  Spirit
-
-IMPORTANTE:
-Estos rangos están reservados como convención de desarrollo. Los Reavers todavía
-no están implementados en los tres CNS.
-
-
-===============================================================================
-9. SPECTRAL REAVER: DOS COLORES, UN SOLO MODO
-===============================================================================
-
-Diseño acordado:
-
-    var(21)=0
-        = Spectral Reaver
-
-El Spectral tendrá dos apariencias:
-
-    Azul
-        para palettes azules de Raziel
-
-    Verde
-        para palettes verdes de Raziel
-
-NO son dos Reavers diferentes.
-NO deben consumir dos valores distintos de var(21).
-
-La selección azul/verde deberá resolverse visualmente mediante PalNo / palette,
-cuando el sistema se vuelva a implementar.
-
-Actualmente esta lógica todavía NO está conectada.
-
-
-===============================================================================
-10. ESTADO ACTUAL / PUNTO DE CONTINUACIÓN
-===============================================================================
-
-AL CERRAR ESTA DOCUMENTACIÓN:
 
 FUNCIONA:
-- Raziel inicia con espada.
-- Stand con espada (1000).
-- Y+Z entra correctamente a State 2100.
-- Anim 1005 clava la espada.
-- Se crea la grieta y la espada independiente.
-- La composición de capas 6502/6505/6504 funciona.
-- La espada puede recuperarse con Y+Z.
-- Anim 1006 devuelve a Raziel al modo con espada.
-- La grieta queda temporalmente y desaparece.
-- Se resolvió el bug del Helper mostrando un Raziel gigante.
-- Se resolvió el parpadeo entre 6501 y 6502.
 
-TODAVÍA NO ESTÁ:
-- Locomoción propia con espada.
+- Raziel inicia con espada.
+- Stand con espada.
+- Walk Forward con espada.
+- Walk Back con espada.
+- Giro con espada.
+- Clavar espada con Y+Z.
+- Helper de espada física.
+- Efecto de grieta y profundidad por capas.
+- Recuperación solo cerca de la espada.
+- Spectral visual azul/verde.
+- Spectral en Stand, Walk y transiciones básicas de Crouch.
+- Cambio de Reaver con Z cuando Raziel está sin espada.
+- Ciclo var(21) 0..8.
+- Moveset corporal heredado.
+- Throws, Taunt, Run y Hop Back heredados.
+
+TODAVÍA NO ESTÁ COMPLETO:
+
+- Crouch propio con espada.
+- Jump propio con espada.
+- Run / Dash propio con espada.
 - Ataques propios con espada.
-- Proximidad obligatoria para recuperar espada.
 - Lanzamiento de espada.
 - Carga de espada.
-- Reavers elementales activos.
-- Spectral azul/verde conectado al nuevo sistema.
-- Y/Z especiales de Reaver.
+- Poderes definitivos de los Reavers 1..8.
+- Ataques especiales de Reaver.
+- Specials / Supers definitivos.
 - IA.
-- Specials/Supers definitivos.
+- Balance final.
 
-SIGUIENTE BLOQUE DE TRABAJO RECOMENDADO:
-Crear las animaciones de locomoción con espada y adaptar los common states
-necesarios (walk, crouch, jump, run, etc.) para seleccionar animación según
-var(20), conservando la física estándar siempre que sea posible.
 
-NO rehacer la arquitectura de archivos sin una razón concreta.
+===============================================================================
+15. PUNTO DE CONTINUACIÓN
+===============================================================================
+
+Siguiente bloque recomendado:
+
+1. Crear Stand -> Crouch con espada.
+2. Crear Crouch con espada.
+3. Crear Crouch -> Stand con espada.
+4. Crear Jump Start / Jump / Fall / Landing con espada.
+5. Adaptar Run / Dash con espada.
+6. Después comenzar normales y combos propios de espada.
+7. Luego ampliar el sistema real de los nueve Reavers.
+
+No rehacer la arquitectura sin una razón concreta.
