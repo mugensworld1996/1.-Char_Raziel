@@ -15,11 +15,39 @@ sprpriority = 0
 
 
 ; Con espada fisica
+;==============================================================================
+; GIRO CON ESPADA
+;==============================================================================
+
+[State 0, Sword Turn]
+type = ChangeAnim
+triggerall = var(20) = 0
+
+; Cuando MUGEN intenta usar su giro normal Action 5,
+; sustituimos esa animacion por nuestro giro con espada.
+trigger1 = Anim = 5
+
+value = 8
+
+
+;==============================================================================
+; STAND CON ESPADA
+;==============================================================================
+
 [State 0, Stand Sword]
 type = ChangeAnim
 triggerall = var(20) = 0
-trigger1 = Anim != 1000 && Anim != 5
+
+; Stand normal
+; No interrumpir Action 5 ni nuestro Action 8
+trigger1 = Anim != 1000 && Anim != 5 && Anim != 8
+
+; Si termina el giro normal
 trigger2 = Anim = 5 && AnimTime = 0
+
+; Si termina nuestro giro con espada
+trigger3 = Anim = 8 && AnimTime = 0
+
 value = 1000
 
 
@@ -55,6 +83,153 @@ type = ChangeState
 trigger1 = !alive
 value = 5050
 ctrl = 0
+
+;==============================================================================
+; CROUCH START
+; State 10
+; Parado -> Agachado
+;==============================================================================
+
+[Statedef 10]
+type = C
+movetype = I
+physics = C
+ctrl = 0
+sprpriority = 0
+
+
+;------------------------------------------------------------------------------
+; ANIMACION CON ESPADA
+;------------------------------------------------------------------------------
+
+[State 10, Sword Crouch Start]
+type = ChangeAnim
+triggerall = var(20) = 0
+trigger1 = Time = 0
+value = 1020
+
+
+;------------------------------------------------------------------------------
+; ANIMACION SIN ESPADA
+;------------------------------------------------------------------------------
+
+[State 10, Unarmed Crouch Start]
+type = ChangeAnim
+triggerall = var(20) != 0
+trigger1 = Time = 0
+value = 10
+
+
+;------------------------------------------------------------------------------
+; LOGICA ORIGINAL
+; Reducir velocidad horizontal al empezar a agacharse
+;------------------------------------------------------------------------------
+
+[State 10, Crouch Friction]
+type = VelMul
+trigger1 = Time = 0
+x = 0.75
+
+
+;------------------------------------------------------------------------------
+; TERMINAR TRANSICION
+;------------------------------------------------------------------------------
+
+[State 10, To Crouch]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 11
+
+;==============================================================================
+; CROUCH
+; State 11
+; Raziel permanece agachado
+;==============================================================================
+
+[Statedef 11]
+type = C
+movetype = I
+physics = C
+ctrl = 1
+sprpriority = 0
+
+
+;------------------------------------------------------------------------------
+; AGACHADO CON ESPADA
+;------------------------------------------------------------------------------
+
+[State 11, Sword Crouch]
+type = ChangeAnim
+triggerall = var(20) = 0
+trigger1 = Anim != 1025
+value = 1025
+
+
+;------------------------------------------------------------------------------
+; AGACHADO SIN ESPADA
+;------------------------------------------------------------------------------
+
+[State 11, Unarmed Crouch]
+type = ChangeAnim
+triggerall = var(20) != 0
+trigger1 = Anim != 11
+value = 11
+
+
+;------------------------------------------------------------------------------
+; SOLTAR ABAJO -> LEVANTARSE
+;------------------------------------------------------------------------------
+
+[State 11, Crouch End]
+type = ChangeState
+trigger1 = command != "holddown"
+value = 12
+
+;==============================================================================
+; CROUCH END
+; State 12
+; Agachado -> Parado
+;==============================================================================
+
+[Statedef 12]
+type = S
+movetype = I
+physics = S
+ctrl = 0
+sprpriority = 0
+
+
+;------------------------------------------------------------------------------
+; LEVANTARSE CON ESPADA
+;------------------------------------------------------------------------------
+
+[State 12, Sword Crouch End]
+type = ChangeAnim
+triggerall = var(20) = 0
+trigger1 = Time = 0
+value = 1021
+
+
+;------------------------------------------------------------------------------
+; LEVANTARSE SIN ESPADA
+;------------------------------------------------------------------------------
+
+[State 12, Unarmed Crouch End]
+type = ChangeAnim
+triggerall = var(20) != 0
+trigger1 = Time = 0
+value = 12
+
+
+;------------------------------------------------------------------------------
+; VOLVER A STAND
+;------------------------------------------------------------------------------
+
+[State 12, To Stand]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
 
 ;==============================================================================
 ; WALK
@@ -94,6 +269,16 @@ x = Const(velocity.walk.back.x)
 ; var(20) = 0
 ;==============================================================================
 
+;==============================================================================
+; GIRO CON ESPADA DURANTE CAMINATA
+;==============================================================================
+
+[State 20, Sword Turn]
+type = ChangeAnim
+triggerall = var(20) = 0
+trigger1 = Anim = 5
+value = 8
+
 
 ;------------------------------------------------------------------------------
 ; Adelante con espada
@@ -105,7 +290,11 @@ type = ChangeAnim
 triggerall = var(20) = 0
 triggerall = command = "holdfwd"
 
-trigger1 = Anim != 1010
+; No interrumpir el giro
+trigger1 = Anim != 1010 && Anim != 5 && Anim != 8
+
+; Cuando termine Action 8, volver a caminar
+trigger2 = Anim = 8 && AnimTime = 0
 
 value = 1010
 
@@ -120,7 +309,11 @@ type = ChangeAnim
 triggerall = var(20) = 0
 triggerall = command = "holdback"
 
-trigger1 = Anim != 1015
+; No interrumpir el giro
+trigger1 = Anim != 1015 && Anim != 5 && Anim != 8
+
+; Cuando termine Action 8, volver a caminar atras
+trigger2 = Anim = 8 && AnimTime = 0
 
 value = 1015
 

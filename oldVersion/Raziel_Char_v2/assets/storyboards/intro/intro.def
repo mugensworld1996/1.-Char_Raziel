@@ -1,0 +1,32 @@
+[SceneDef]
+spr = intro.sff
+startscene = 0
+
+[Scene 0]
+clearcolor = 0,0,0
+
+fadein.time = 10
+fadein.col = 0,0,0
+fadeout.time = 10
+fadeout.col = 0,0,0
+
+layerall.pos = 160,0
+
+layer0.anim = 0
+layer0.starttime = 0
+
+end.time = 600   ; cuánto dura la escena total
+
+; --------------------------------
+; ANIMACIÓN EN LOOP
+; --------------------------------
+[Begin Action 0]
+0,0, -160,0, 12
+1,0, -160,0, 12
+2,0, -160,0, 12
+3,0, -160,0, 12
+4,0, -160,0, 12
+5,0, -160,0, 12
+6,0, -160,0, 12
+7,0, -160,0, 12
+loopstart
