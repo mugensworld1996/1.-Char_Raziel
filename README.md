@@ -30,7 +30,7 @@ El objetivo es que ambas formas evolucionen hasta convertirse en estilos de comb
 
 ## Estado actual
 
-🚧 **Proyecto en desarrollo activo.**
+🚧 **Proyecto en desarrollo activo**
 
 ### Ya implementado
 
