@@ -372,6 +372,285 @@ value = 0
 ctrl = 1
 
 
+;;==============================================================================
+;; JUMP START
+;; State 40
+;;==============================================================================
+;;
+;; CON ESPADA:
+;;   Action 1030
+;;
+;; SIN ESPADA:
+;;   Action 40
+;;
+;;==============================================================================
+;
+;[Statedef 40]
+;type = S
+;physics = S
+;ctrl = 0
+;sprpriority = 1
+;facep2 = 1
+;
+;
+;;------------------------------------------------------------------------------
+;; ANIMACION DE INICIO
+;;------------------------------------------------------------------------------
+;
+;[State 40, Sword Jump Start]
+;type = ChangeAnim
+;triggerall = var(20) = 0
+;trigger1 = Time = 0
+;value = 1030
+;
+;
+;[State 40, Reaver Jump Start]
+;type = ChangeAnim
+;triggerall = var(20) != 0
+;trigger1 = Time = 0
+;value = 40
+;
+;
+;;------------------------------------------------------------------------------
+;; DIRECCION DEL SALTO
+;;------------------------------------------------------------------------------
+;
+;[State 40, Reset Jump Direction]
+;type = VarSet
+;trigger1 = Time = 0
+;sysvar(1) = 0
+;
+;
+;[State 40, Jump Forward]
+;type = VarSet
+;trigger1 = command = "holdfwd"
+;sysvar(1) = 1
+;
+;
+;[State 40, Jump Back]
+;type = VarSet
+;trigger1 = command = "holdback"
+;sysvar(1) = -1
+;
+;
+;;------------------------------------------------------------------------------
+;; VELOCIDAD DEL SALTO
+;;------------------------------------------------------------------------------
+;
+;[State 40, Jump Velocity]
+;type = VelSet
+;trigger1 = AnimTime = 0
+;x = ifelse(sysvar(1)=0, const(velocity.jump.neu.x), ifelse(sysvar(1)=1, const(velocity.jump.fwd.x), const(velocity.jump.back.x)))
+;y = const(velocity.jump.y)
+;
+;
+;;------------------------------------------------------------------------------
+;; SALTO DESDE CARRERA
+;;------------------------------------------------------------------------------
+;
+;[State 40, Running Jump]
+;type = VelSet
+;trigger1 = AnimTime = 0
+;trigger1 = PrevStateNo = 100
+;trigger1 = sysvar(1) = 1
+;x = Const(velocity.runjump.fwd.x)
+;
+;
+;;------------------------------------------------------------------------------
+;; PASAR AL ESTADO AEREO
+;;------------------------------------------------------------------------------
+;
+;[State 40, To Jump]
+;type = ChangeState
+;trigger1 = AnimTime = 0
+;value = 50
+;ctrl = 1
+
+
+
+;==============================================================================
+; JUMP
+; State 50
+;==============================================================================
+;
+; ASCENSO:
+;
+;   SIN ESPADA       CON ESPADA
+;   41 arriba        1031 arriba
+;   42 adelante      1032 adelante
+;   43 atras         1033 atras
+;
+; CAIDA:
+;
+;   SIN ESPADA       CON ESPADA
+;   44 arriba        1034 arriba
+;   45 adelante      1035 adelante
+;   46 atras         1036 atras
+;
+;==============================================================================
+
+[Statedef 50]
+type = A
+physics = A
+
+
+;------------------------------------------------------------------------------
+; RESET
+;------------------------------------------------------------------------------
+
+[State 50, Reset]
+type = VarSet
+trigger1 = Time = 0
+sysvar(1) = 0
+
+
+;==============================================================================
+; ASCENSO CON ESPADA
+;==============================================================================
+
+[State 50, Sword Jump]
+type = ChangeAnim
+triggerall = var(20) = 0
+trigger1 = Time = 0
+value = ifelse((vel x)=0,1031,ifelse((vel x)>0,1032,1033))
+
+
+;==============================================================================
+; ASCENSO SIN ESPADA
+;==============================================================================
+
+[State 50, Reaver Jump]
+type = ChangeAnim
+triggerall = var(20) != 0
+trigger1 = Time = 0
+value = ifelse((vel x)=0,41,ifelse((vel x)>0,42,43))
+
+
+;==============================================================================
+; ASCENSO -> CAIDA CON ESPADA
+;==============================================================================
+
+[State 50, Sword Falling]
+type = ChangeAnim
+
+triggerall = var(20) = 0
+triggerall = Anim >= 1031
+triggerall = Anim <= 1033
+
+trigger1 = Vel Y > Const720p(-8)
+
+persistent = 0
+
+value = Anim + 3
+
+
+;==============================================================================
+; ASCENSO -> CAIDA SIN ESPADA
+;==============================================================================
+
+[State 50, Reaver Falling]
+type = ChangeAnim
+
+triggerall = var(20) != 0
+triggerall = Anim >= 41
+triggerall = Anim <= 43
+
+trigger1 = Vel Y > Const720p(-8)
+
+persistent = 0
+
+value = Anim + 3
+
+
+
+;==============================================================================
+; JUMP LAND
+; State 52
+;==============================================================================
+;
+; CON ESPADA:
+;   Action 1037
+;
+; SIN ESPADA:
+;   Action 47
+;
+;==============================================================================
+
+[Statedef 52]
+type = S
+physics = S
+ctrl = 0
+
+
+;------------------------------------------------------------------------------
+; ANIMACION DE ATERRIZAJE
+;------------------------------------------------------------------------------
+
+[State 52, Sword Landing]
+type = ChangeAnim
+triggerall = var(20) = 0
+trigger1 = Time = 0
+value = 1037
+
+
+[State 52, Reaver Landing]
+type = ChangeAnim
+triggerall = var(20) != 0
+trigger1 = Time = 0
+value = 47
+
+
+;------------------------------------------------------------------------------
+; CORREGIR VELOCIDAD VERTICAL
+;------------------------------------------------------------------------------
+
+[State 52, Stop Y]
+type = VelSet
+trigger1 = Time = 0
+y = 0
+
+
+;------------------------------------------------------------------------------
+; COLOCAR A RAZIEL SOBRE EL SUELO
+;------------------------------------------------------------------------------
+
+[State 52, Ground Position]
+type = PosSet
+trigger1 = Time = 0
+y = 0
+
+
+;------------------------------------------------------------------------------
+; DEVOLVER CONTROL
+;------------------------------------------------------------------------------
+
+[State 52, Control]
+type = CtrlSet
+trigger1 = Time = 3
+value = 1
+
+
+;------------------------------------------------------------------------------
+; DETENER MOVIMIENTO HORIZONTAL
+;------------------------------------------------------------------------------
+
+[State 52, Stop Moving]
+type = VelSet
+trigger1 = abs(Vel X) < Const(movement.stand.friction.threshold)
+x = 0
+
+
+;------------------------------------------------------------------------------
+; VOLVER A STAND
+;------------------------------------------------------------------------------
+
+[State 52, End Landing]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+
 ;---------------------------------------------------------------------------
 ; Throw - Attempt
 ; CNS difficulty: medium-advanced

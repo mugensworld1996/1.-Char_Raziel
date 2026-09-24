@@ -37,6 +37,40 @@
 [Statedef -2]
 
 ;==============================================================================
+; FONDO NEGRO SIN SPRITE: 555 TICKS DESDE EL INICIO DE LA INTRO
+;==============================================================================
+; var(23): 0 = pendiente; 1 = fondo iniciado en esta ronda.
+; Las animaciones 191 y 192 del AIR adjunto duran 200 ticks, por lo que
+; el negro puede continuar 355 ticks despues de que termina la intro.
+[State -2, Reiniciar marca del fondo]
+type = VarSet
+trigger1 = RoundState = 0
+v = 23
+value = 0
+ignorehitpause = 1
+
+; EnvColor pinta de negro bajo los personajes sin usar Action 193 ni sprite.
+[State -2, Fondo negro durante 555 ticks]
+type = EnvColor
+triggerall = RoundState = 1
+triggerall = StateNo = 190
+trigger1 = var(23) = 0
+value = 0,0,0
+time = 555                         ; EDITAR DURACION EN TICKS
+under = 1
+ignorehitpause = 1
+
+; Evita reiniciar el contador del color en cada tick del mismo round.
+[State -2, Marcar fondo iniciado]
+type = VarSet
+triggerall = RoundState = 1
+triggerall = StateNo = 190
+trigger1 = var(23) = 0
+v = 23
+value = 1
+ignorehitpause = 1
+
+;==============================================================================
 ; GIRO GLOBAL CON ESPADA
 ;==============================================================================
 
@@ -458,13 +492,13 @@ type = RemoveExplod
 ; Raziel vuelve a tener espada
 trigger1 = var(20) = 0
 
-; CambiÃ³ a otro Reaver
+; Cambió a otro Reaver
 trigger2 = var(21) != 0
 
 ; Ya no esta caminando
 trigger3 = StateNo != 20
 
-; CambiÃ³ a una paleta que no utiliza Spectral azul
+; Cambió a una paleta que no utiliza Spectral azul
 trigger4 = !(PalNo = 1 || PalNo = 3)
 
 ID = 7001
@@ -540,3 +574,4 @@ triggerall = Time = 1
 trigger1 = StateNo = 52
 trigger2 = StateNo = 106
 value = 40,0
+
