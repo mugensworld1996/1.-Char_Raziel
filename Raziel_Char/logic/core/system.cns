@@ -37,38 +37,38 @@
 [Statedef -2]
 
 ;==============================================================================
-; FONDO NEGRO SIN SPRITE: 555 TICKS DESDE EL INICIO DE LA INTRO
+; FONDO DE INTRO - ACTION 193
+; Solo para el Raziel que esta ejecutando State/Anim 191.
+; Funciona tanto en Player 1 como en Player 2.
+; Sprite ya reescalado: scale = 1,1 (sin reajustar).
 ;==============================================================================
-; var(23): 0 = pendiente; 1 = fondo iniciado en esta ronda.
-; Las animaciones 191 y 192 del AIR adjunto duran 200 ticks, por lo que
-; el negro puede continuar 355 ticks despues de que termina la intro.
-[State -2, Reiniciar marca del fondo]
-type = VarSet
-trigger1 = RoundState = 0
-v = 23
-value = 0
+[State -2, Mostrar fondo 193 solo en Intro 191]
+type = Explod
+triggerall = RoundState = 1
+triggerall = StateNo = 191
+triggerall = Anim = 191
+trigger1 = NumExplod(193) = 0
+ID = 193
+anim = 193
+postype = p1
+pos = 0,-10
+bindtime = -1
+removetime = -1
+sprpriority = -10
+scale = 0.258,0.258
+ownpal = 1
 ignorehitpause = 1
 
-; EnvColor pinta de negro bajo los personajes sin usar Action 193 ni sprite.
-[State -2, Fondo negro durante 555 ticks]
-type = EnvColor
-triggerall = RoundState = 1
-triggerall = StateNo = 190
-trigger1 = var(23) = 0
-value = 0,0,0
-time = 555                         ; EDITAR DURACION EN TICKS
-under = 1
+; Al saltar/terminar la intro, retirar el fondo inmediatamente.
+[State -2, Retirar fondo 193 fuera de Intro 191]
+type = RemoveExplod
+triggerall = NumExplod(193) > 0
+trigger1 = RoundState != 1
+trigger2 = StateNo != 191
+trigger3 = Anim != 191
+ID = 193
 ignorehitpause = 1
 
-; Evita reiniciar el contador del color en cada tick del mismo round.
-[State -2, Marcar fondo iniciado]
-type = VarSet
-triggerall = RoundState = 1
-triggerall = StateNo = 190
-trigger1 = var(23) = 0
-v = 23
-value = 1
-ignorehitpause = 1
 
 ;==============================================================================
 ; GIRO GLOBAL CON ESPADA
@@ -167,7 +167,7 @@ ID = 7000
 anim = 7000
 
 postype = p1
-pos = -63,-27
+pos = -68,-27
 
 bindtime = -1
 removetime = -1
@@ -206,7 +206,7 @@ ID = 7100
 anim = 7100
 
 postype = p1
-pos = -63,-27
+pos = -68,-27
 
 bindtime = -1
 removetime = -1
@@ -559,6 +559,431 @@ trigger4 = !(PalNo = 2 || PalNo = 4)
 ID = 7101
 
 
+
+;==============================================================================
+; REAVERS ELEMENTALES: VISUALES STAND Y WALK (P1 Y P2)
+; Nuevo: var(21) = 1..8 (Z cambia el Reaver desde raziel.cmd)
+; Spectral azul/verde (var(21)=0) conserva el comportamiento anterior.
+; Los Reavers elementales usan sus propias animaciones 7200..7900,
+; sin ningun filtro PalNo: funcionan con cualquier paleta/jugador.
+; NOTA: crouch y transiciones elementales pendientes de sus AIR/sprites.
+;==============================================================================
+
+;------------------------------------------------------------------------------
+; FIRE: STAND - Action 7200
+;------------------------------------------------------------------------------
+[State -2, FIRE Reaver Stand]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 1
+triggerall = Anim = 0
+trigger1 = NumExplod(7200) = 0
+ID = 7200
+anim = 7200
+postype = p1
+pos = -68,-27
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove FIRE Reaver Stand]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 1
+trigger3 = Anim != 0
+ID = 7200
+
+;------------------------------------------------------------------------------
+; FIRE: WALK - Action 7200 (ID 7201)
+;------------------------------------------------------------------------------
+[State -2, FIRE Reaver Walk]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 1
+triggerall = StateNo = 20
+trigger1 = NumExplod(7201) = 0
+ID = 7201
+anim = 7200
+postype = p1
+pos = -56,-33
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove FIRE Reaver Walk]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 1
+trigger3 = StateNo != 20
+ID = 7201
+
+;------------------------------------------------------------------------------
+; AIR: STAND - Action 7300
+;------------------------------------------------------------------------------
+[State -2, AIR Reaver Stand]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 2
+triggerall = Anim = 0
+trigger1 = NumExplod(7300) = 0
+ID = 7300
+anim = 7300
+postype = p1
+pos = -68,-27
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove AIR Reaver Stand]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 2
+trigger3 = Anim != 0
+ID = 7300
+
+;------------------------------------------------------------------------------
+; AIR: WALK - Action 7300 (ID 7301)
+;------------------------------------------------------------------------------
+[State -2, AIR Reaver Walk]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 2
+triggerall = StateNo = 20
+trigger1 = NumExplod(7301) = 0
+ID = 7301
+anim = 7300
+postype = p1
+pos = -56,-33
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove AIR Reaver Walk]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 2
+trigger3 = StateNo != 20
+ID = 7301
+
+;------------------------------------------------------------------------------
+; WATER: STAND - Action 7400
+;------------------------------------------------------------------------------
+[State -2, WATER Reaver Stand]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 3
+triggerall = Anim = 0
+trigger1 = NumExplod(7400) = 0
+ID = 7400
+anim = 7400
+postype = p1
+pos = -68,-27
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove WATER Reaver Stand]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 3
+trigger3 = Anim != 0
+ID = 7400
+
+;------------------------------------------------------------------------------
+; WATER: WALK - Action 7400 (ID 7401)
+;------------------------------------------------------------------------------
+[State -2, WATER Reaver Walk]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 3
+triggerall = StateNo = 20
+trigger1 = NumExplod(7401) = 0
+ID = 7401
+anim = 7400
+postype = p1
+pos = -56,-33
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove WATER Reaver Walk]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 3
+trigger3 = StateNo != 20
+ID = 7401
+
+;------------------------------------------------------------------------------
+; EARTH: STAND - Action 7500
+;------------------------------------------------------------------------------
+[State -2, EARTH Reaver Stand]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 4
+triggerall = Anim = 0
+trigger1 = NumExplod(7500) = 0
+ID = 7500
+anim = 7500
+postype = p1
+pos = -68,-27
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove EARTH Reaver Stand]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 4
+trigger3 = Anim != 0
+ID = 7500
+
+;------------------------------------------------------------------------------
+; EARTH: WALK - Action 7500 (ID 7501)
+;------------------------------------------------------------------------------
+[State -2, EARTH Reaver Walk]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 4
+triggerall = StateNo = 20
+trigger1 = NumExplod(7501) = 0
+ID = 7501
+anim = 7500
+postype = p1
+pos = -56,-33
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove EARTH Reaver Walk]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 4
+trigger3 = StateNo != 20
+ID = 7501
+
+;------------------------------------------------------------------------------
+; LIGHTNING: STAND - Action 7600
+;------------------------------------------------------------------------------
+[State -2, LIGHTNING Reaver Stand]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 5
+triggerall = Anim = 0
+trigger1 = NumExplod(7600) = 0
+ID = 7600
+anim = 7600
+postype = p1
+pos = -68,-27
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove LIGHTNING Reaver Stand]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 5
+trigger3 = Anim != 0
+ID = 7600
+
+;------------------------------------------------------------------------------
+; LIGHTNING: WALK - Action 7600 (ID 7601)
+;------------------------------------------------------------------------------
+[State -2, LIGHTNING Reaver Walk]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 5
+triggerall = StateNo = 20
+trigger1 = NumExplod(7601) = 0
+ID = 7601
+anim = 7600
+postype = p1
+pos = -56,-33
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove LIGHTNING Reaver Walk]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 5
+trigger3 = StateNo != 20
+ID = 7601
+
+;------------------------------------------------------------------------------
+; LIGHT: STAND - Action 7700
+;------------------------------------------------------------------------------
+[State -2, LIGHT Reaver Stand]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 6
+triggerall = Anim = 0
+trigger1 = NumExplod(7700) = 0
+ID = 7700
+anim = 7700
+postype = p1
+pos = -68,-27
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove LIGHT Reaver Stand]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 6
+trigger3 = Anim != 0
+ID = 7700
+
+;------------------------------------------------------------------------------
+; LIGHT: WALK - Action 7700 (ID 7701)
+;------------------------------------------------------------------------------
+[State -2, LIGHT Reaver Walk]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 6
+triggerall = StateNo = 20
+trigger1 = NumExplod(7701) = 0
+ID = 7701
+anim = 7700
+postype = p1
+pos = -56,-33
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove LIGHT Reaver Walk]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 6
+trigger3 = StateNo != 20
+ID = 7701
+
+;------------------------------------------------------------------------------
+; DARK: STAND - Action 7800
+;------------------------------------------------------------------------------
+[State -2, DARK Reaver Stand]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 7
+triggerall = Anim = 0
+trigger1 = NumExplod(7800) = 0
+ID = 7800
+anim = 7800
+postype = p1
+pos = -68,-27
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove DARK Reaver Stand]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 7
+trigger3 = Anim != 0
+ID = 7800
+
+;------------------------------------------------------------------------------
+; DARK: WALK - Action 7800 (ID 7801)
+;------------------------------------------------------------------------------
+[State -2, DARK Reaver Walk]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 7
+triggerall = StateNo = 20
+trigger1 = NumExplod(7801) = 0
+ID = 7801
+anim = 7800
+postype = p1
+pos = -56,-33
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove DARK Reaver Walk]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 7
+trigger3 = StateNo != 20
+ID = 7801
+
+;------------------------------------------------------------------------------
+; SPIRIT: STAND - Action 7900
+;------------------------------------------------------------------------------
+[State -2, SPIRIT Reaver Stand]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 8
+triggerall = Anim = 0
+trigger1 = NumExplod(7900) = 0
+ID = 7900
+anim = 7900
+postype = p1
+pos = -68,-27
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove SPIRIT Reaver Stand]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 8
+trigger3 = Anim != 0
+ID = 7900
+
+;------------------------------------------------------------------------------
+; SPIRIT: WALK - Action 7900 (ID 7901)
+;------------------------------------------------------------------------------
+[State -2, SPIRIT Reaver Walk]
+type = Explod
+triggerall = var(20) != 0
+triggerall = var(21) = 8
+triggerall = StateNo = 20
+trigger1 = NumExplod(7901) = 0
+ID = 7901
+anim = 7900
+postype = p1
+pos = -56,-33
+bindtime = -1
+removetime = -1
+sprpriority = 4
+scale = 0.20,0.20
+ownpal = 1
+
+[State -2, Remove SPIRIT Reaver Walk]
+type = RemoveExplod
+trigger1 = var(20) = 0
+trigger2 = var(21) != 8
+trigger3 = StateNo != 20
+ID = 7901
 
 ;==============================================================================
 ; STATE -3

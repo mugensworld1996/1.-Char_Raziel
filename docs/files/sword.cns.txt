@@ -56,7 +56,7 @@ ID = 6500
 stateno = 7000
 
 postype = p1
-pos = 0,0
+pos = -4,0
 facing = 1
 ownpal = 1
 keyctrl = 0

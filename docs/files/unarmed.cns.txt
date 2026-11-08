@@ -461,24 +461,119 @@ time = 1
 ; CNS difficulty: basic
 [Statedef 190]
 type = S
+movetype = I
+physics = S
 ctrl = 0
-anim = 190
+anim = 1000
 velset = 0,0
 
-[State 190, 1] ;Freeze animation until PreIntro is over
-type = ChangeAnim
-trigger1 = RoundState = 0
-value = 190
-
-[State 190, 2] ;Assert this until you want "round 1, fight" to begin
+; El estado 190 solo espera y decide: la animacion 190 ya no se reproduce.
+[State 190, Esperar intros]
 type = AssertSpecial
 trigger1 = 1
 flag = Intro
 
-[State 190, 4] ;Change to stand state
+; En un mirror Raziel vs Raziel, el lado P2 usa la intro contraria a P1.
+; Se evalua antes de cualquier seleccion individual.
+[State 190, P2 usa 192 si P1 usa 191]
+type = ChangeState
+triggerall = RoundState = 1
+triggerall = TeamSide = 2
+triggerall = NumEnemy = 1
+triggerall = EnemyNear, Name = "Raziel"
+trigger1 = EnemyNear, StateNo = 191
+value = 192
+
+[State 190, P2 usa 191 si P1 usa 192]
+type = ChangeState
+triggerall = RoundState = 1
+triggerall = TeamSide = 2
+triggerall = NumEnemy = 1
+triggerall = EnemyNear, Name = "Raziel"
+trigger1 = EnemyNear, StateNo = 192
+value = 191
+
+; P1 elige una de las dos intros una sola vez por ronda.
+[State 190, P1 elige 191]
+type = ChangeState
+triggerall = RoundState = 1
+triggerall = TeamSide = 1
+trigger1 = Random < 500
+value = 191
+
+[State 190, P1 elige 192]
+type = ChangeState
+triggerall = RoundState = 1
+trigger1 = TeamSide = 1
+value = 192
+
+; Si P2 no enfrenta a otro Raziel, elige una intro normalmente.
+[State 190, P2 contra otro personaje elige 191]
+type = ChangeState
+triggerall = RoundState = 1
+triggerall = TeamSide = 2
+trigger1 = NumEnemy != 1
+trigger1 = Random < 500
+trigger2 = NumEnemy = 1
+trigger2 = EnemyNear, Name != "Raziel"
+trigger2 = Random < 500
+value = 191
+
+[State 190, P2 contra otro personaje elige 192]
+type = ChangeState
+triggerall = RoundState = 1
+triggerall = TeamSide = 2
+trigger1 = NumEnemy != 1
+trigger2 = NumEnemy = 1
+trigger2 = EnemyNear, Name != "Raziel"
+value = 192
+
+; Ocultar solamente mientras espera en 190. Si cambia a 191/192,
+; ChangeState evita este controlador y la intro aparece desde su inicio.
+[State 190, Ocultar espera]
+type = AssertSpecial
+trigger1 = 1
+flag = Invisible
+
+; Intro 191: usa [Begin Action 191] del archivo AIR.
+[Statedef 191]
+type = S
+movetype = I
+physics = S
+ctrl = 0
+anim = 191
+velset = 0,0
+
+[State 191, Mantener intro]
+type = AssertSpecial
+trigger1 = 1
+flag = Intro
+
+[State 191, Fin de intro]
 type = ChangeState
 trigger1 = AnimTime = 0
 value = 0
+ctrl = 1
+
+; Intro 192: usa [Begin Action 192] del archivo AIR.
+[Statedef 192]
+type = S
+movetype = I
+physics = S
+ctrl = 0
+anim = 192
+velset = 0,0
+
+[State 192, Mantener intro]
+type = AssertSpecial
+trigger1 = 1
+flag = Intro
+
+[State 192, Fin de intro]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
 
 ;---------------------------------------------------------------------------
 ; Taunt
@@ -724,3 +819,4 @@ anim = 650
 type = CtrlSet
 trigger1 = Time = 20
 value = 1
+
