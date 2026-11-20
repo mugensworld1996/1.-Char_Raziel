@@ -37,20 +37,6 @@
 [Statedef -2]
 
 ;==============================================================================
-; FONDO NEGRO SOLO DURANTE LA INTRO (190/191/192)
-; Si se salta la intro, deja de renovarse en el siguiente tick.
-;==============================================================================
-[State -2, Fondo negro solo durante intro]
-type = EnvColor
-triggerall = RoundState = 1
-trigger1 = StateNo = 190 || StateNo = 191 || StateNo = 192
-value = 0,0,0
-time = 1
-under = 1
-ignorehitpause = 1
-
-
-;==============================================================================
 ; FONDO DE INTRO - ACTION 193
 ; Solo para el Raziel que esta ejecutando State/Anim 191.
 ; Funciona tanto en Player 1 como en Player 2.
@@ -69,7 +55,7 @@ pos = 0,-10
 bindtime = -1
 removetime = -1
 sprpriority = -10
-scale = 0.257,0.257
+scale = 0.258,0.258
 ownpal = 1
 ignorehitpause = 1
 
@@ -998,6 +984,38 @@ trigger1 = var(20) = 0
 trigger2 = var(21) != 8
 trigger3 = StateNo != 20
 ID = 7901
+
+;==============================================================================
+; ENERGIA: NO GANAR POWER POR RECIBIR GOLPES (RAZIEL, MUGEN 1.0)
+; var(23) = ultimo valor legitimo de la barra antes del estado GetHit.
+; No editar var(23) en otros sistemas. No modifica el power del rival.
+;==============================================================================
+
+[State -2, Guardar energia fuera de GetHit]
+type = VarSet
+triggerall = IsHelper = 0
+trigger1 = MoveType != H
+v = 23
+value = Power
+ignorehitpause = 1
+
+[State -2, Quitar ganancia al recibir dano]
+type = PowerSet
+triggerall = IsHelper = 0
+triggerall = MoveType = H
+trigger1 = Power > var(23)
+value = var(23)
+ignorehitpause = 1
+
+; Si una mecanica resta energia durante GetHit, respetar esa perdida.
+[State -2, Conservar perdidas de energia en GetHit]
+type = VarSet
+triggerall = IsHelper = 0
+triggerall = MoveType = H
+trigger1 = Power < var(23)
+v = 23
+value = Power
+ignorehitpause = 1
 
 ;==============================================================================
 ; STATE -3

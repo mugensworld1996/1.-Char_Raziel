@@ -87,9 +87,19 @@ ownpal = 1
 ; Cuando Raziel termina de clavarla, pasar al estado estable
 ;------------------------------------------------------------------------------
 
+; El clavado usa la accion 1005 tanto en combate como durante el resultado.
+; Si un golpe interrumpe a Raziel despues de aparecer el objeto, el Helper
+; ya representa una espada en el suelo. Mantener el modo de arma coherente.
+[State 7000, Confirmar objeto en el suelo si se interrumpio el clavado]
+type = ParentVarSet
+triggerall = Root, Anim != 1005
+trigger1 = Root, var(20) = 0
+v = 20
+value = 1
+
 [State 7000, Planted]
 type = ChangeState
-trigger1 = Root,StateNo != 2100
+trigger1 = Root, Anim != 1005
 value = 7010
 
 

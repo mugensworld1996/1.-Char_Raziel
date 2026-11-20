@@ -32,47 +32,8 @@ velset = 0,0
 sprpriority = 2
 
 
-;------------------------------------------------------------------------------
-; La espada deja de estar equipada
-;
-; TEMPORAL:
-; Por ahora hacemos el cambio al terminar la animacion.
-;
-; Mas adelante este trigger se cambiara al AnimElem exacto
-; en el que Raziel realmente suelta la espada.
-;------------------------------------------------------------------------------
-
-;------------------------------------------------------------------------------
-; Crear objeto espada / grieta
-;------------------------------------------------------------------------------
-
-[State 2100, Create Sword Object]
-type = Helper
-trigger1 = AnimElem = 8
-
-helpertype = normal
-name = "Physical Soul Reaver"
-ID = 6500
-stateno = 7000
-
-postype = p1
-pos = -4,0
-facing = 1
-ownpal = 1
-keyctrl = 0
-
-size.xscale = 1
-size.yscale = 1
-
-;============================================================
-; AL TERMINAR, ESPADA = CLAVADA
-;============================================================
-
-[State 2100, Sword Planted]
-type = VarSet
-trigger1 = AnimTime = 0
-v = 20
-value = 1
+; El estado -3 crea el Helper 6500 en el elemento 8 de la accion 1005
+; y marca la espada como clavada al terminar la accion.
 
 ;------------------------------------------------------------------------------
 ; Volver al Stand sin espada

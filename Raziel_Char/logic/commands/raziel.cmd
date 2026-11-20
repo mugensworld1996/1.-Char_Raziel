@@ -580,7 +580,7 @@ type = ChangeState
 value = 265
 triggerall = stateno = 200
 triggerall = movecontact
-trigger1 = command = "x"
+trigger1 = command = "c"
 
 [State -1, Combo 2D]
 type = ChangeState
@@ -616,6 +616,7 @@ trigger1 = command = "b"
 [State -1, Run Fwd]
 type = ChangeState
 value = 100
+triggerall = 0
 trigger1 = command = "FF"
 trigger1 = statetype = S
 trigger1 = ctrl
@@ -625,6 +626,7 @@ trigger1 = ctrl
 [State -1, Run Back]
 type = ChangeState
 value = 105
+triggerall = 0
 trigger1 = command = "BB"
 trigger1 = statetype = S
 trigger1 = ctrl
@@ -634,7 +636,8 @@ trigger1 = ctrl
 [State -1, Throw]
 type = ChangeState
 value = 800
-triggerall = command = "y" || command = "z"
+; Y reservado; se mantiene el lanzamiento con Z + direccion
+triggerall = command = "z"
 triggerall = statetype = S
 triggerall = ctrl
 triggerall = stateno != 100
@@ -666,7 +669,7 @@ type = ChangeState
 value = 265
 triggerall = stateno = 200
 triggerall = movecontact
-trigger1 = command = "x"
+trigger1 = command = "c"
 
 ;=========================
 ; 1D -> 2D
@@ -717,7 +720,10 @@ trigger1 = command = "b"
 [State -1, Stand Light Punch]
 type = ChangeState
 value = 200
-triggerall = command = "x"
+triggerall = command = "c"
+; C solo, no interferir con atras+C o adelante+C
+triggerall = command != "holdback"
+triggerall = command != "holdfwd"
 triggerall = command != "holddown"
 trigger1 = statetype = S
 trigger1 = ctrl
@@ -727,7 +733,7 @@ trigger1 = ctrl
 [State -1, Stand Medium Punch]
 type = ChangeState
 value = 210
-triggerall = command = "fwd_c"
+triggerall = command = "back_c"
 triggerall = command != "holddown"
 trigger1 = statetype = S
 trigger1 = ctrl
@@ -737,7 +743,7 @@ trigger1 = ctrl
 [State -1, Stand Strong Punch]
 type = ChangeState
 value = 220
-triggerall = command = "c"
+triggerall = command = "fwd_c"
 triggerall = command != "holddown"
 trigger1 = statetype = S
 trigger1 = ctrl
@@ -776,6 +782,8 @@ trigger1 = ctrl
 ; Crouching Light Punch
 [State -1, Crouching Light Punch]
 type = ChangeState
+; Reservado X/Y: accion heredada deshabilitada
+triggerall = 0
 value = 400
 triggerall = command = "x"
 triggerall = command = "holddown"
@@ -786,6 +794,8 @@ trigger1 = ctrl
 ; Crouching Medium Punch
 [State -1, Crouching Medium Punch]
 type = ChangeState
+; Reservado X/Y: accion heredada deshabilitada
+triggerall = 0
 value = 410
 triggerall = command = "y"
 triggerall = command = "holddown"
@@ -836,6 +846,8 @@ trigger1 = ctrl
 ; Jump Light Punch
 [State -1, Jump Light Punch]
 type = ChangeState
+; Reservado X/Y: accion heredada deshabilitada
+triggerall = 0
 value = 600
 triggerall = command = "x"
 trigger1 = statetype = A
@@ -845,6 +857,8 @@ trigger1 = ctrl
 ; Jump Medium Punch
 [State -1, Jump Medium Punch]
 type = ChangeState
+; Reservado X/Y: accion heredada deshabilitada
+triggerall = 0
 value = 610
 triggerall = command = "y"
 trigger1 = statetype = A

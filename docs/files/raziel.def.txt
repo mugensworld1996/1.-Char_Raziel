@@ -1,5 +1,5 @@
 [Info]
-name="Raziel"
+name="mw_Raziel"
 displayname="RAZIEL"
 versiondate=17/02/2026
 mugenversion=1.0

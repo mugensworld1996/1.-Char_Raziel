@@ -25,6 +25,7 @@
 ;   8 = Spirit
 ;
 ; var(22) = Carga de la espada
+; var(24) = Pose de fin de round: 0 pendiente, 170/180 en curso, -1 terminada
 ;
 ;==============================================================================
 
@@ -102,6 +103,13 @@ v = 20
 value = 0
 ignorehitpause = 1
 
+
+[State -2, Reiniciar pose de resultado]
+type = VarSet
+trigger1 = RoundState = 0
+v = 24
+value = 0
+ignorehitpause = 1
 
 ; Reaver por defecto: Spectral
 ; No se mostrara mientras var(20) = 0
@@ -986,10 +994,129 @@ trigger3 = StateNo != 20
 ID = 7901
 
 ;==============================================================================
+; ENERGIA: NO GANAR POWER POR RECIBIR GOLPES (RAZIEL, MUGEN 1.0)
+; var(23) = ultimo valor legitimo de la barra antes del estado GetHit.
+; No editar var(23) en otros sistemas. No modifica el power del rival.
+;==============================================================================
+
+[State -2, Guardar energia fuera de GetHit]
+type = VarSet
+triggerall = IsHelper = 0
+trigger1 = MoveType != H
+v = 23
+value = Power
+ignorehitpause = 1
+
+[State -2, Quitar ganancia al recibir dano]
+type = PowerSet
+triggerall = IsHelper = 0
+triggerall = MoveType = H
+trigger1 = Power > var(23)
+value = var(23)
+ignorehitpause = 1
+
+; Si una mecanica resta energia durante GetHit, respetar esa perdida.
+[State -2, Conservar perdidas de energia en GetHit]
+type = VarSet
+triggerall = IsHelper = 0
+triggerall = MoveType = H
+trigger1 = Power < var(23)
+v = 23
+value = Power
+ignorehitpause = 1
+
+;==============================================================================
 ; STATE -3
 ;==============================================================================
 
 [Statedef -3]
+
+; La entrada normal es 170 por tiempo o 180 -> 181 al ganar. Despues de un
+; KO esperamos a que common1 inicialice 5150 y presentamos la derrota ahi.
+[State -3, Elegir pose de fin de round una sola vez]
+type = VarSet
+triggerall = !IsHelper && RoundState = 4 && var(24) = 0
+trigger1 = StateNo = 181 && Win
+trigger2 = StateNo = 170 && LoseTime
+trigger3 = StateNo = 5150 && Time > 0 && !Alive && LoseKO
+v = 24
+value = ifelse(Win, 180, 170)
+
+[State -3, Detener el deslizamiento de KO para la pose]
+type = VelSet
+triggerall = !IsHelper && RoundState = 4 && StateNo = 5150
+trigger1 = var(24) = 170
+x = 0
+y = 0
+
+[State -3, Clavar antes de la pose si la espada sigue equipada]
+type = ChangeAnim
+triggerall = !IsHelper && RoundState = 4 && var(24) > 0
+trigger1 = var(20) = 0 && Anim != 1005
+value = 1005
+
+[State -3, Abrir la grieta en el contacto con el suelo]
+type = Helper
+triggerall = !IsHelper
+triggerall = Anim = 1005
+triggerall = AnimElem = 8
+trigger1 = StateNo = 2100
+trigger2 = RoundState = 4
+
+helpertype = normal
+name = "Physical Soul Reaver"
+ID = 6500
+stateno = 7000
+
+postype = p1
+pos = -4,0
+facing = 1
+ownpal = 1
+keyctrl = 0
+
+size.xscale = 1
+size.yscale = 1
+
+[State -3, Confirmar espada clavada al terminar la accion 1005]
+type = VarSet
+triggerall = !IsHelper
+triggerall = Anim = 1005 && AnimTime = 0
+trigger1 = StateNo = 2100
+trigger2 = RoundState = 4
+v = 20
+value = 1
+
+[State -3, Reproducir el resultado con las manos libres]
+type = ChangeAnim
+triggerall = !IsHelper && RoundState = 4 && var(24) > 0
+trigger1 = var(20) != 0 && Anim != var(24)
+value = var(24)
+
+; Las dos poses tienen LoopStart. Esperar la primera pasada completa;
+; luego el AIR sigue animando hasta que el motor cierre el round.
+[State -3, Completar la primera pasada de la pose]
+type = VarSet
+triggerall = !IsHelper && RoundState = 4 && var(24) > 0
+trigger1 = Anim = var(24) && AnimTime = 0
+v = 24
+value = -1
+
+[State -3, Dar tiempo al clavado y a la pose]
+type = AssertSpecial
+triggerall = !IsHelper && RoundState = 4
+trigger1 = var(24) > 0
+flag = roundnotover
+
+; Si Raziel sigue en su stand al llegar a la fase de poses, usar la entrada
+; correspondiente. En un KO el derrotado conserva su caida y su estado 5150.
+[State -3, Salir del stand al confirmarse el resultado]
+type = ChangeState
+triggerall = !IsHelper && Alive && RoundState = 4
+triggerall = StateNo = 0
+trigger1 = Win
+trigger2 = LoseTime
+value = ifelse(Win, 180, 170)
+ctrl = 0
 
 
 ; Sonido al aterrizar

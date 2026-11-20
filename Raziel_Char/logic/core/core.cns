@@ -360,6 +360,7 @@ value = 21
 ; TERMINAR CAMINATA
 ;==============================================================================
 
+
 [State 20, End Walk]
 type = ChangeState
 
@@ -372,100 +373,68 @@ value = 0
 ctrl = 1
 
 
-;;==============================================================================
-;; JUMP START
-;; State 40
-;;==============================================================================
-;;
-;; CON ESPADA:
-;;   Action 1030
-;;
-;; SIN ESPADA:
-;;   Action 40
-;;
-;;==============================================================================
-;
-;[Statedef 40]
-;type = S
-;physics = S
-;ctrl = 0
-;sprpriority = 1
-;facep2 = 1
-;
-;
-;;------------------------------------------------------------------------------
-;; ANIMACION DE INICIO
-;;------------------------------------------------------------------------------
-;
-;[State 40, Sword Jump Start]
-;type = ChangeAnim
-;triggerall = var(20) = 0
-;trigger1 = Time = 0
-;value = 1030
-;
-;
-;[State 40, Reaver Jump Start]
-;type = ChangeAnim
-;triggerall = var(20) != 0
-;trigger1 = Time = 0
-;value = 40
-;
-;
-;;------------------------------------------------------------------------------
-;; DIRECCION DEL SALTO
-;;------------------------------------------------------------------------------
-;
-;[State 40, Reset Jump Direction]
-;type = VarSet
-;trigger1 = Time = 0
-;sysvar(1) = 0
-;
-;
-;[State 40, Jump Forward]
-;type = VarSet
-;trigger1 = command = "holdfwd"
-;sysvar(1) = 1
-;
-;
-;[State 40, Jump Back]
-;type = VarSet
-;trigger1 = command = "holdback"
-;sysvar(1) = -1
-;
-;
-;;------------------------------------------------------------------------------
-;; VELOCIDAD DEL SALTO
-;;------------------------------------------------------------------------------
-;
-;[State 40, Jump Velocity]
-;type = VelSet
-;trigger1 = AnimTime = 0
-;x = ifelse(sysvar(1)=0, const(velocity.jump.neu.x), ifelse(sysvar(1)=1, const(velocity.jump.fwd.x), const(velocity.jump.back.x)))
-;y = const(velocity.jump.y)
-;
-;
-;;------------------------------------------------------------------------------
-;; SALTO DESDE CARRERA
-;;------------------------------------------------------------------------------
-;
-;[State 40, Running Jump]
-;type = VelSet
-;trigger1 = AnimTime = 0
-;trigger1 = PrevStateNo = 100
-;trigger1 = sysvar(1) = 1
-;x = Const(velocity.runjump.fwd.x)
-;
-;
-;;------------------------------------------------------------------------------
-;; PASAR AL ESTADO AEREO
-;;------------------------------------------------------------------------------
-;
-;[State 40, To Jump]
-;type = ChangeState
-;trigger1 = AnimTime = 0
-;value = 50
-;ctrl = 1
+;==============================================================================
+; JUMP START - STATE 40
+; Personalizado para MUGEN 1.0
+; Espada equipada (var(20)=0): Action 1030
+; Sin espada (var(20)!=0): Action 40
+;==============================================================================
 
+[Statedef 40]
+type = S
+physics = S
+ctrl = 0
+sprpriority = 1
+facep2 = 1
+
+; No definir anim=40 en Statedef: se selecciona la animacion
+; correcta desde el primer tick y evitamos mostrar un frame sin espada.
+[State 40, Sword Jump Start]
+type = ChangeAnim
+trigger1 = Time = 0 && var(20) = 0
+value = 1030
+
+[State 40, Reaver Jump Start]
+type = ChangeAnim
+trigger1 = Time = 0 && var(20) != 0
+value = 40
+
+; Mantener la logica de direccion del salto de common1.cns.
+[State 40, Reset Jump Direction]
+type = VarSet
+trigger1 = Time = 0
+sysvar(1) = 0
+
+[State 40, Jump Forward]
+type = VarSet
+trigger1 = command = "holdfwd"
+sysvar(1) = 1
+
+[State 40, Jump Back]
+type = VarSet
+trigger1 = command = "holdback"
+sysvar(1) = -1
+
+; Se aplica la velocidad cuando finaliza la animacion de inicio.
+[State 40, Jump Velocity]
+type = VelSet
+trigger1 = AnimTime = 0
+x = ifelse(sysvar(1) = 0, Const(velocity.jump.neu.x), ifelse(sysvar(1) = 1, Const(velocity.jump.fwd.x), Const(velocity.jump.back.x)))
+y = Const(velocity.jump.y)
+
+; Conservar compatibilidad con saltos desde carrera.
+[State 40, Running Jump]
+type = VelSet
+trigger1 = AnimTime = 0
+trigger1 = PrevStateNo = 100
+trigger1 = sysvar(1) = 1
+x = Const(velocity.runjump.fwd.x)
+
+[State 40, To Jump]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 50
+ctrl = 1
 
 
 ;==============================================================================
@@ -685,6 +654,7 @@ anim = 800
 [State 800, 1]
 type = HitDef
 Trigger1 = Time = 0
+getpower = 0,0 ; El lanzamiento exitoso ya otorga energia en State 810
 attr = S, NT          ;Attributes: Standing, Normal Throw
 hitflag = M-          ;Affect only ground people who are not being hit
 priority = 1, Miss    ;Throw has low priority, must be miss or dodge type.
@@ -835,7 +805,7 @@ type    = A
 movetype= H
 physics = N
 velset = 2.8,-7
-poweradd = 40
+; Se elimino poweradd = 40: no cargar energia al ser lanzado
 
 [State 821, 1] ;Gravity
 type = VelAdd

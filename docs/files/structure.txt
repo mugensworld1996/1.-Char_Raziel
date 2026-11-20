@@ -6,12 +6,12 @@ Proyecto:
 D:\Cantoral\3. Personal\2. Proyectos\1. Mugen\2. Chars\1. Char_Raziel\Raziel_Char
 
 Generado:
-dom. 08/11/2026  2:31:45.97
+vie. 20/11/2026  0:23:55.65
 
 ============================================================
 
 Listado de rutas de carpetas
-El n£mero de serie del volumen es 000000DD B64D:88B4
+El n£mero de serie del volumen es 00000020 B64D:88B4
 D:\CANTORAL\3. PERSONAL\2. PROYECTOS\1. MUGEN\2. CHARS\1. CHAR_RAZIEL\RAZIEL_CHAR
 |   raziel.def
 |   
@@ -20,14 +20,6 @@ D:\CANTORAL\3. PERSONAL\2. PROYECTOS\1. MUGEN\2. CHARS\1. CHAR_RAZIEL\RAZIEL_CHA
 |   |   raziel.sff
 |   |   raziel.snd
 |   |   
-|   +---assets
-|   |   \---raziel.sff
-|   |       \---palette
-|   |               razielAzul1.act
-|   |               razielAzul2.act
-|   |               razielVerde1.act
-|   |               razielVerde2.act
-|   |               
 |   \---storyboards
 |       \---intro
 |               intro.def
@@ -53,8 +45,6 @@ D:\CANTORAL\3. PERSONAL\2. PROYECTOS\1. MUGEN\2. CHARS\1. CHAR_RAZIEL\RAZIEL_CHA
 |           reavers_3.cns
 |           
 \---palette
-        1mr.act
-        2sr.act
         razielAzul1.act
         razielAzul2.act
         razielVerde1.act

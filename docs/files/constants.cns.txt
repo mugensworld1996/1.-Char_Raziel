@@ -26,8 +26,8 @@ FloatPersistIndex = 40  ;reset to 0 between rounds or matches. There are 60 int 
 [Size]
 xscale = .26			;Horizontal scaling factor.
 yscale = .26			;Vertical scaling factor.
-ground.back = 15		;Player width (back, ground)
-ground.front = 16		;Player width (front, ground)
+ground.back = 18		;Player width (back, ground)
+ground.front = 18		;Player width (front, ground)
 air.back = 12		;Player width (back, air)
 air.front = 12		;Player width (front, air)
 height = 60			;Height of player (for opponent to jump over)

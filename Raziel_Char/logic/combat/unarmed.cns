@@ -10,14 +10,28 @@ juggle  = 1				;Number of air juggle points move takes
 velset = 0,0			;Set velocity (x,y) (Def: no change)
 ctrl = 0				;Set ctrl (Def: no change)
 anim = 200				;Change animation (Def: no change)
-poweradd = 20			;Power to add (Def: 0)
+; Antes: poweradd = 20 (cargaba incluso sin acertar)
 sprpriority = 2			;Set layering priority to 2 (in front)
+
+; Avance suave del golpe 1A durante la preparacion.
+; 1.3 unidades por tick durante 6 ticks (~7.8 unidades).
+[State 200, Avance corto]
+type = VelSet
+trigger1 = Time = [0,5]
+x = 1.3
+
+; Detener el avance antes de terminar el ataque.
+[State 200, Fin del avance]
+type = VelSet
+trigger1 = Time = 6
+x = 0
 
 [State 200, 1]
 type = HitDef
 trigger1 = Time = 5
 attr = S, NA			;Attribute: Standing, Normal Attack
 damage = 23, 0			;Damage that move inflicts, guard damage
+getpower = 20, 0 ; Solo al impactar, 0 si bloquean
 animtype = Light			;Animation type: Light, Medium, Heavy, Back (def: Light)
 guardflag = MA			;Flags on how move is to be guarded against
 hitflag = MAF			;Flags of conditions that move can hit
@@ -53,7 +67,7 @@ type    = S
 movetype= A
 physics = S
 juggle  = 4
-poweradd= 65
+; Antes: poweradd = 65 (cargaba incluso sin acertar)
 ctrl = 0
 velset = 0,0
 anim = 210
@@ -89,6 +103,7 @@ trigger1 = Time = 2
 
 attr = S, NA
 damage = 40
+getpower = 65, 0 ; Solo al impactar, 0 si bloquean
 
 ground.type = High
 ground.velocity = -2
@@ -106,7 +121,7 @@ type    = S
 movetype= A
 physics = S
 juggle  = 4
-poweradd= 65
+; Antes: poweradd = 65 (cargaba incluso sin acertar)
 ctrl = 0
 velset = 0,0
 anim = 220
@@ -142,6 +157,7 @@ trigger1 = Time = 4
 
 attr = S, NA
 damage = 45
+getpower = 65, 0 ; Solo al impactar, 0 si bloquean
 
 ground.type = Trip
 ground.velocity = -5
@@ -157,7 +173,7 @@ type    = S
 movetype= A
 physics = S
 juggle  = 4
-poweradd= 22
+; Antes: poweradd = 22 (cargaba incluso sin acertar)
 ctrl = 0
 velset = 0,0
 anim = 230
@@ -174,6 +190,7 @@ trigger1 = Time = 7
 
 attr = S, NA
 damage = 30
+getpower = 22, 0 ; Solo al impactar, 0 si bloquean
 
 guardflag = MA
 hitflag = MAF
@@ -193,7 +210,7 @@ type    = S
 movetype= A
 physics = S
 juggle  = 5
-poweradd= 65
+; Antes: poweradd = 65 (cargaba incluso sin acertar)
 ctrl = 0
 velset = 0,0
 anim = 240
@@ -210,6 +227,7 @@ trigger1 = Time = 4
 
 attr = S, NA
 damage = 35
+getpower = 65, 0 ; Solo al impactar, 0 si bloquean
 
 guardflag = MA
 hitflag = MAF
@@ -229,7 +247,7 @@ type    = S
 movetype= A
 physics = S
 juggle  = 5
-poweradd= 65
+; Antes: poweradd = 65 (cargaba incluso sin acertar)
 ctrl = 0
 velset = 0,0
 anim = 250
@@ -256,6 +274,7 @@ trigger1 = Time = 5
 
 attr = S, NA
 damage = 40
+getpower = 40, 0 ; Solo al impactar, 0 si bloquean
 
 guardflag = MA
 hitflag = MAF
@@ -300,6 +319,7 @@ trigger1 = Time = 4
 
 attr = S, NA
 damage = 70
+getpower = 70, 0 ; Solo al impactar, 0 si bloquean
 
 guardflag = MA
 hitflag = MAF
@@ -335,6 +355,7 @@ trigger1 = Time = 7
 
 attr = S, NA
 damage = 35
+getpower = 35, 0 ; Solo al impactar, 0 si bloquean
 
 ground.type = High
 ground.velocity = -1
@@ -369,6 +390,7 @@ trigger1 = Time = 5
 
 attr = S, NA
 damage = 40
+getpower = 40, 0 ; Solo al impactar, 0 si bloquean
 
 ground.type = High
 ground.velocity = -3
@@ -400,6 +422,7 @@ trigger1 = Time = 3
 
 attr = S, NA
 damage = 60
+getpower = 60, 0 ; Solo al impactar, 0 si bloquean
 
 guardflag = MA
 hitflag = MAF
@@ -416,13 +439,19 @@ value = 0
 ctrl = 1
 
 ;---------------------------------------------------------------------------
-; Lose by Time Over
-; CNS difficulty: basic
+; Derrota por tiempo. La derrota por KO se presenta en el estado 5150.
 [Statedef 170]
 type = S
+movetype = I
+physics = S
 ctrl = 0
-anim = 170
 velset = 0,0
+
+[State 170, Iniciar resultado segun la espada]
+type = ChangeAnim
+trigger1 = Time = 0
+trigger1 = Anim != ifelse(var(20) = 0 && !DrawGame, 1005, 170)
+value = ifelse(var(20) = 0 && !DrawGame, 1005, 170)
 
 [State 170, 1]
 type = NotHitBy
@@ -446,9 +475,16 @@ value = 181
 ; CNS difficulty: basic
 [Statedef 181]
 type = S
+movetype = I
+physics = S
 ctrl = 0
-anim = 180
 velset = 0,0
+
+[State 181, Iniciar resultado segun la espada]
+type = ChangeAnim
+trigger1 = Time = 0
+trigger1 = Anim != ifelse(var(20) = 0, 1005, 180)
+value = ifelse(var(20) = 0, 1005, 180)
 
 [State 181, 1]
 type = NotHitBy
@@ -456,9 +492,13 @@ trigger1 = 1
 value = SCA
 time = 1
 
-;---------------------------------------------------------------------------
-; Introduction
-; CNS difficulty: basic
+;==========================================================================
+; INTROS MKX - MW / MUGEN 1.0
+; Compatibles por nombre exacto del [Info] name del .def:
+;   mw_Raziel, mw_Mascara
+; Para ampliar el roster, agregar el nuevo name en los dos grupos de
+; trigger1/trigger2 de sincronizacion y como != en los fallbacks de P2.
+;==========================================================================
 [Statedef 190]
 type = S
 movetype = I
@@ -467,33 +507,33 @@ ctrl = 0
 anim = 1000
 velset = 0,0
 
-; El estado 190 solo espera y decide: la animacion 190 ya no se reproduce.
-[State 190, Esperar intros]
+[State 190, Mantener Intro]
 type = AssertSpecial
 trigger1 = 1
 flag = Intro
 
-; En un mirror Raziel vs Raziel, el lado P2 usa la intro contraria a P1.
-; Se evalua antes de cualquier seleccion individual.
-[State 190, P2 usa 192 si P1 usa 191]
+; P2 usa la complementaria de P1 si su enemigo es uno de los personajes mw.
+[State 190, MW P2 usa 192 cuando rival usa 191]
 type = ChangeState
 triggerall = RoundState = 1
 triggerall = TeamSide = 2
 triggerall = NumEnemy = 1
-triggerall = EnemyNear, Name = "Raziel"
-trigger1 = EnemyNear, StateNo = 191
+triggerall = EnemyNear, StateNo = 191
+trigger1 = EnemyNear, Name = "mw_Raziel"
+trigger2 = EnemyNear, Name = "mw_Mascara"
 value = 192
 
-[State 190, P2 usa 191 si P1 usa 192]
+[State 190, MW P2 usa 191 cuando rival usa 192]
 type = ChangeState
 triggerall = RoundState = 1
 triggerall = TeamSide = 2
 triggerall = NumEnemy = 1
-triggerall = EnemyNear, Name = "Raziel"
-trigger1 = EnemyNear, StateNo = 192
+triggerall = EnemyNear, StateNo = 192
+trigger1 = EnemyNear, Name = "mw_Raziel"
+trigger2 = EnemyNear, Name = "mw_Mascara"
 value = 191
 
-; P1 elige una de las dos intros una sola vez por ronda.
+; P1 decide la intro; P2 compatible espera a P1 para elegir la contraria.
 [State 190, P1 elige 191]
 type = ChangeState
 triggerall = RoundState = 1
@@ -507,29 +547,29 @@ triggerall = RoundState = 1
 trigger1 = TeamSide = 1
 value = 192
 
-; Si P2 no enfrenta a otro Raziel, elige una intro normalmente.
-[State 190, P2 contra otro personaje elige 191]
+; P2 frente a oponente no MW mantiene el comportamiento aleatorio.
+[State 190, P2 no compatible elige 191]
 type = ChangeState
 triggerall = RoundState = 1
 triggerall = TeamSide = 2
 trigger1 = NumEnemy != 1
 trigger1 = Random < 500
 trigger2 = NumEnemy = 1
-trigger2 = EnemyNear, Name != "Raziel"
+trigger2 = EnemyNear, Name != "mw_Raziel"
+trigger2 = EnemyNear, Name != "mw_Mascara"
 trigger2 = Random < 500
 value = 191
 
-[State 190, P2 contra otro personaje elige 192]
+[State 190, P2 no compatible elige 192]
 type = ChangeState
 triggerall = RoundState = 1
 triggerall = TeamSide = 2
 trigger1 = NumEnemy != 1
 trigger2 = NumEnemy = 1
-trigger2 = EnemyNear, Name != "Raziel"
+trigger2 = EnemyNear, Name != "mw_Raziel"
+trigger2 = EnemyNear, Name != "mw_Mascara"
 value = 192
 
-; Ocultar solamente mientras espera en 190. Si cambia a 191/192,
-; ChangeState evita este controlador y la intro aparece desde su inicio.
 [State 190, Ocultar espera]
 type = AssertSpecial
 trigger1 = 1
@@ -615,7 +655,7 @@ type    = C
 movetype= A
 physics = C
 juggle  = 5
-poweradd= 15
+; Antes: poweradd = 15 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 400
 
@@ -632,7 +672,7 @@ type    = C
 movetype= A
 physics = C
 juggle  = 6
-poweradd= 50
+; Antes: poweradd = 50 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 410
 
@@ -649,7 +689,7 @@ type    = C
 movetype= A
 physics = C
 juggle  = 6
-poweradd= 50
+; Antes: poweradd = 50 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 420
 
@@ -667,7 +707,7 @@ type    = C
 movetype= A
 physics = C
 juggle  = 5
-poweradd= 22
+; Antes: poweradd = 22 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 430
 
@@ -685,7 +725,7 @@ type    = C
 movetype= A
 physics = C
 juggle  = 5
-poweradd= 22
+; Antes: poweradd = 22 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 440
 
@@ -708,7 +748,7 @@ type    = C
 movetype= A
 physics = C
 juggle  = 7
-poweradd= 70
+; Antes: poweradd = 70 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 450
 
@@ -726,7 +766,7 @@ type    = A
 movetype= A
 physics = A
 juggle  = 2
-poweradd= 11
+; Antes: poweradd = 11 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 600
 
@@ -743,7 +783,7 @@ type    = A
 movetype= A
 physics = A
 juggle  = 4
-poweradd= 65
+; Antes: poweradd = 65 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 610
 
@@ -760,7 +800,7 @@ type    = A
 movetype= A
 physics = A
 juggle  = 4
-poweradd= 70
+; Antes: poweradd = 70 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 620
 
@@ -777,7 +817,7 @@ type    = A
 movetype= A
 physics = A
 juggle  = 3
-poweradd= 20
+; Antes: poweradd = 20 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 630
 
@@ -794,7 +834,7 @@ type    = A
 movetype= A
 physics = A
 juggle  = 4
-poweradd= 65
+; Antes: poweradd = 65 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 640
 
@@ -811,7 +851,7 @@ type    = A
 movetype= A
 physics = A
 juggle  = 4
-poweradd= 70
+; Antes: poweradd = 70 (cargaba incluso sin acertar)
 ctrl = 0
 anim = 650
 
