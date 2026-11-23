@@ -439,13 +439,19 @@ value = 0
 ctrl = 1
 
 ;---------------------------------------------------------------------------
-; Lose by Time Over
-; CNS difficulty: basic
+; Derrota por tiempo. La derrota por KO se presenta en el estado 5150.
 [Statedef 170]
 type = S
+movetype = I
+physics = S
 ctrl = 0
-anim = 170
 velset = 0,0
+
+[State 170, Iniciar resultado segun la espada]
+type = ChangeAnim
+trigger1 = Time = 0
+trigger1 = Anim != ifelse(var(20) = 0 && !DrawGame, 1005, 170)
+value = ifelse(var(20) = 0 && !DrawGame, 1005, 170)
 
 [State 170, 1]
 type = NotHitBy
@@ -469,9 +475,16 @@ value = 181
 ; CNS difficulty: basic
 [Statedef 181]
 type = S
+movetype = I
+physics = S
 ctrl = 0
-anim = 180
 velset = 0,0
+
+[State 181, Iniciar resultado segun la espada]
+type = ChangeAnim
+trigger1 = Time = 0
+trigger1 = Anim != ifelse(var(20) = 0, 1005, 180)
+value = ifelse(var(20) = 0, 1005, 180)
 
 [State 181, 1]
 type = NotHitBy

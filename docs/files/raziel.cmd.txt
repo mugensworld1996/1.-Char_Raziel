@@ -488,6 +488,11 @@ time = 1
 ; Don't remove the following line. It's required by the CMD standard.
 [Statedef -1]
 
+; Ya no hay recuperacion automatica tras lanzar la espada.
+; El sistema -2 convierte var(20) = 2 en var(20) = 4 (PERDIDA)
+; cuando el proyectil 6506 termina, impacta o es bloqueado.
+; Raziel permanece en modo Reaver hasta el siguiente round.
+
 ;==============================================================================
 ; CAMBIO DE MODO - ESPADA
 ;==============================================================================
@@ -539,6 +544,16 @@ triggerall = Abs(Helper(6500), Pos X - Pos X) <= 20
 
 trigger1 = 1
 
+; Z se interpreta segun la direccion solo con la espada en la mano.
+; Adelante es relativo a Raziel (holdfwd). Y+Z conserva el cambio de modo.
+[State -1, Ataques de espada de pie]
+type = ChangeState
+triggerall = var(20) = 0 && StateType = S && Ctrl
+triggerall = command != "sword_switch"
+triggerall = command != "holdback" && command != "holddown" && command != "holdup"
+trigger1 = command = "z"
+value = ifelse(command = "holdfwd", 1210, 1200)
+
 ;==============================================================================
 ; CAMBIO DE REAVER
 ; Solo disponible cuando Raziel NO tiene la espada
@@ -577,6 +592,7 @@ trigger1 = 1
 
 [State -1, Combo 2A]
 type = ChangeState
+triggerall = var(20) != 0
 value = 265
 triggerall = stateno = 200
 triggerall = movecontact
@@ -584,6 +600,7 @@ trigger1 = command = "c"
 
 [State -1, Combo 2D]
 type = ChangeState
+triggerall = var(20) != 0
 value = 255
 triggerall = stateno = 230
 triggerall = movecontact
@@ -591,6 +608,7 @@ trigger1 = command = "a"
 
 [State -1, Combo 3D]
 type = ChangeState
+triggerall = var(20) != 0
 value = 260
 triggerall = stateno = 255
 triggerall = movecontact
@@ -598,6 +616,7 @@ trigger1 = command = "a"
 
 [State -1, Combo 2E]
 type = ChangeState
+triggerall = var(20) != 0
 value = 270
 triggerall = stateno = 240
 triggerall = movecontact
@@ -605,6 +624,7 @@ trigger1 = command = "b"
 
 [State -1, Combo 3E]
 type = ChangeState
+triggerall = var(20) != 0
 value = 275
 triggerall = stateno = 270
 triggerall = movecontact
@@ -635,6 +655,8 @@ trigger1 = ctrl
 ; Throw
 [State -1, Throw]
 type = ChangeState
+triggerall = var(20) != 0
+triggerall = command != "sword_switch"
 value = 800
 ; Y reservado; se mantiene el lanzamiento con Z + direccion
 triggerall = command = "z"
@@ -666,6 +688,7 @@ trigger1 = ctrl
 
 [State -1, Combo 2A]
 type = ChangeState
+triggerall = var(20) != 0
 value = 265
 triggerall = stateno = 200
 triggerall = movecontact
@@ -677,6 +700,7 @@ trigger1 = command = "c"
 
 [State -1, Combo 2D]
 type = ChangeState
+triggerall = var(20) != 0
 value = 255
 triggerall = stateno = 230
 triggerall = movecontact
@@ -688,6 +712,7 @@ trigger1 = command = "a"
 
 [State -1, Combo 3D]
 type = ChangeState
+triggerall = var(20) != 0
 value = 260
 triggerall = stateno = 255
 triggerall = movecontact
@@ -699,6 +724,7 @@ trigger1 = command = "a"
 
 [State -1, Combo 2E]
 type = ChangeState
+triggerall = var(20) != 0
 value = 270
 triggerall = stateno = 240
 triggerall = movecontact
@@ -710,6 +736,7 @@ trigger1 = command = "b"
 
 [State -1, Combo 3E]
 type = ChangeState
+triggerall = var(20) != 0
 value = 275
 triggerall = stateno = 270
 triggerall = movecontact
@@ -719,6 +746,7 @@ trigger1 = command = "b"
 ; Stand Light Punch
 [State -1, Stand Light Punch]
 type = ChangeState
+triggerall = var(20) != 0
 value = 200
 triggerall = command = "c"
 ; C solo, no interferir con atras+C o adelante+C
@@ -732,6 +760,7 @@ trigger1 = ctrl
 ; Stand Medium Punch
 [State -1, Stand Medium Punch]
 type = ChangeState
+triggerall = var(20) != 0
 value = 210
 triggerall = command = "back_c"
 triggerall = command != "holddown"
@@ -742,6 +771,7 @@ trigger1 = ctrl
 ; Stand Strong Punch
 [State -1, Stand Strong Punch]
 type = ChangeState
+triggerall = var(20) != 0
 value = 220
 triggerall = command = "fwd_c"
 triggerall = command != "holddown"
@@ -752,6 +782,7 @@ trigger1 = ctrl
 ; Stand Light Kick
 [State -1, Stand Light Kick]
 type = ChangeState
+triggerall = var(20) != 0
 value = 230
 triggerall = command = "a"
 triggerall = command != "holddown"
@@ -762,6 +793,7 @@ trigger1 = ctrl
 ; Standing Medium Kick
 [State -1, Standing Medium Kick]
 type = ChangeState
+triggerall = var(20) != 0
 value = 240
 triggerall = command = "b"
 triggerall = command != "holddown"
@@ -782,6 +814,7 @@ trigger1 = ctrl
 ; Crouching Light Punch
 [State -1, Crouching Light Punch]
 type = ChangeState
+triggerall = var(20) != 0
 ; Reservado X/Y: accion heredada deshabilitada
 triggerall = 0
 value = 400
@@ -794,6 +827,7 @@ trigger1 = ctrl
 ; Crouching Medium Punch
 [State -1, Crouching Medium Punch]
 type = ChangeState
+triggerall = var(20) != 0
 ; Reservado X/Y: accion heredada deshabilitada
 triggerall = 0
 value = 410
@@ -806,6 +840,7 @@ trigger1 = ctrl
 ; Crouching Strong Punch
 [State -1, Crouching Strong Punch]
 type = ChangeState
+triggerall = var(20) != 0
 value = 420
 triggerall = command = "z"
 triggerall = command = "holddown"
@@ -816,6 +851,7 @@ trigger1 = ctrl
 ; Crouching Light Kick
 [State -1, Crouching Light Kick]
 type = ChangeState
+triggerall = var(20) != 0
 value = 430
 triggerall = command = "a"
 triggerall = command = "holddown"
@@ -826,6 +862,7 @@ trigger1 = ctrl
 ; Crouching Medium Kick
 [State -1, Crouching Medium Kick]
 type = ChangeState
+triggerall = var(20) != 0
 value = 440
 triggerall = command = "b"
 triggerall = command = "holddown"
@@ -836,6 +873,7 @@ trigger1 = ctrl
 ; Crouching Strong Kick
 [State -1, Crouching Strong Kick]
 type = ChangeState
+triggerall = var(20) != 0
 value = 450
 triggerall = command = "c"
 triggerall = command = "holddown"
@@ -846,6 +884,7 @@ trigger1 = ctrl
 ; Jump Light Punch
 [State -1, Jump Light Punch]
 type = ChangeState
+triggerall = var(20) != 0
 ; Reservado X/Y: accion heredada deshabilitada
 triggerall = 0
 value = 600
@@ -857,6 +896,7 @@ trigger1 = ctrl
 ; Jump Medium Punch
 [State -1, Jump Medium Punch]
 type = ChangeState
+triggerall = var(20) != 0
 ; Reservado X/Y: accion heredada deshabilitada
 triggerall = 0
 value = 610
@@ -868,6 +908,7 @@ trigger1 = ctrl
 ; Jump Strong Punch
 [State -1, Jump Strong Punch]
 type = ChangeState
+triggerall = var(20) != 0
 value = 620
 triggerall = command = "z"
 trigger1 = statetype = A
@@ -877,6 +918,7 @@ trigger1 = ctrl
 ; Jump Light Kick
 [State -1, Jump Light Kick]
 type = ChangeState
+triggerall = var(20) != 0
 value = 630
 triggerall = command = "a"
 trigger1 = statetype = A
@@ -886,6 +928,7 @@ trigger1 = ctrl
 ; Jump Medium Kick
 [State -1, Jump Medium Kick]
 type = ChangeState
+triggerall = var(20) != 0
 value = 640
 triggerall = command = "b"
 trigger1 = statetype = A
@@ -895,6 +938,7 @@ trigger1 = ctrl
 ; Jump Strong Kick
 [State -1, Jump Strong Kick]
 type = ChangeState
+triggerall = var(20) != 0
 value = 650
 triggerall = command = "c"
 trigger1 = statetype = A

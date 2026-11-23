@@ -12,6 +12,7 @@
 ;   1 = Clavada en el suelo
 ;   2 = Lanzada / volando
 ;   3 = Caida en el suelo
+;   4 = PERDIDA (lanzada y consumida; sigue en modo Reaver)
 ;
 ;==============================================================================
 
@@ -90,4 +91,350 @@ value = 0
 type = ChangeState
 trigger1 = AnimTime = 0
 value = 0
+ctrl = 1
+
+;==============================================================================
+; 1200 - Corte con la espada fisica (Z)
+;==============================================================================
+[Statedef 1200]
+type = S
+movetype = A
+physics = S
+ctrl = 0
+velset = 0,0
+sprpriority = 2
+anim = 1200
+
+; La primera caja roja esta en el elemento 15 (1033,14). Un solo HitDef
+; cubre el arco del corte hasta la ultima caja del elemento 25.
+[State 1200, Corte]
+type = HitDef
+trigger1 = AnimElem = 15
+persistent = 0
+attr = S, NA
+damage = 45,0
+getpower = 45,0
+animtype = Medium
+hitflag = MAF
+guardflag = MA
+pausetime = 8,8
+hitsound = 5,2
+guardsound = 6,0
+ground.type = High
+ground.slidetime = 9
+ground.hittime = 16
+ground.velocity = -4,0
+air.velocity = -3,-3
+
+[State 1200, Fin del corte]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+;==============================================================================
+; 1210 - Lanzar la espada fisica (adelante + Z)
+;==============================================================================
+[Statedef 1210]
+type = S
+movetype = A
+physics = S
+ctrl = 0
+velset = 0,0
+sprpriority = 2
+anim = 1210
+
+;===============================================================================
+; PARAMETROS DE CALIBRACION DEL LANZAMIENTO:
+; - velocity = 1.5,0  : velocidad LENTA (antes 7,0)
+; - projremovetime = 3360 ticks (antes 240)
+; - recorrido teorico = 1.5 * 3360 = 5040 unidades,
+;   que es 3 * (7 * 240) = 3 veces el recorrido temporal anterior.
+; - projedgebound y projstagebound = 6000 evitan que desaparezca
+;   prematuramente por salir de los limites normales de la pantalla.
+; - al acertar, 6520 inmoviliza al rival usando SU propia Action 5000
+;   (solamente elem=1), y coloca 6508 delante / 6509 detras.
+; - al bloquear o expirar, desaparece sin explosion ni retorno.
+;===============================================================================
+[State 1210, Proyectil espada giratoria 6506]
+type = Projectile
+triggerall = var(20) = 0
+trigger1 = AnimElem = 20
+persistent = 0
+projid = 6506
+projanim = 6506
+; Action 6507 esta VACIA: sin explosion al conectar o bloquear.
+projhitanim = 6507
+projremanim = 6507
+projcancelanim = 6507
+projremove = 1
+projhits = 1
+; DISTANCIA TOTAL: velocidad X * cantidad de ticks.
+projremovetime = 3360
+; No dejar que los bordes de pantalla o stage acorten el recorrido.
+projedgebound = 6000
+projstagebound = 6000
+postype = p1
+; SALIDA: X positivo delante de Raziel, Y negativo arriba.
+offset = 85,-59
+; ESCALA de la espada mientras vuela, independiente de las mitades 6508/9.
+projscale = 0.275,0.275
+; VELOCIDAD muy lenta para pruebas. Ajustar ticks si se cambia este valor.
+velocity = 7,0
+
+attr = S, NP
+damage = 35,0
+getpower = 35,0
+animtype = Medium
+hitflag = MAF
+guardflag = MA
+; Acierto: meter al rival en el estado personalizado; guardia: normal.
+p2stateno = 6520
+p2getp1state = 1
+forcestand = 1
+p2sprpriority = 0
+pausetime = 0,0
+guard.pausetime = 0,0
+; Sin chispazo/explosion visual del sistema, pero mantener sonido de impacto.
+sparkno = -1
+guard.sparkno = -1
+hitsound = 5,1
+guardsound = 6,0
+; No desplazar ni tirar por los aires al rival durante el clavado.
+ground.type = High
+ground.slidetime = 0
+ground.hittime = 900
+ground.velocity = 0,0
+air.velocity = 0,0
+fall = 0
+
+[State 1210, Espada fuera de la mano]
+type = VarSet
+triggerall = var(20) = 0
+trigger1 = AnimElem = 20
+v = 20
+value = 2
+
+[State 1210, Fin del lanzamiento]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = 0
+ctrl = 1
+
+;===============================================================================
+; 6520 - RIVAL ATRAVESADO POR ESPADA (ESTADO PRESTADO)
+;===============================================================================
+; Se ejecuta EN EL RIVAL cuando le alcanza el Projectile 6506.
+; Solo controla el stun y la pose propia del rival.
+; OJO: NO crear aqui Explod 6508/6509. Un Explod en este estado
+; intenta usar las animaciones/sprites del char golpeado, que
+; normalmente no existen en su AIR/SFF.
+; Las dos mitades se crean DESDE RAZIEL en system.cns [Statedef -2]
+; y quedan sujetas al eje de P2 usando postype = p2.
+;==============================================================================
+[Statedef 6520]
+type = S
+movetype = H
+physics = N
+ctrl = 0
+velset = 0,0
+sprpriority = 0
+
+; Su propio primer frame del Action 5000 (NO el sprite de Raziel).
+[State 6520, Primer frame propio 5000]
+type = ChangeAnim
+triggerall = SelfAnimExist(5000)
+trigger1 = 1
+value = 5000
+elem = 1
+
+; Alternativa si el rival no contiene Action 5000.
+[State 6520, Fallback 5010]
+type = ChangeAnim
+triggerall = !SelfAnimExist(5000) && SelfAnimExist(5010)
+trigger1 = 1
+value = 5010
+elem = 1
+
+[State 6520, Congelar rival]
+type = VelSet
+trigger1 = 1
+x = 0
+y = 0
+
+; PRUEBA LENTA: 900 ticks = 15 segundos a 60 fps.
+; Al terminar, vuelve a SUS estados y control originales.
+[State 6520, Devolver control al rival]
+type = SelfState
+trigger1 = Time >= 900
+value = ifelse(Alive,0,5150)
+ctrl = ifelse(Alive,1,0)
+
+;==============================================================================
+; Guardia de pie de Raziel. var(20)=0 con espada fisica.
+;==============================================================================
+[Statedef 120]
+type = U
+physics = U
+
+[State 120, Animacion de guardia]
+type = ChangeAnim
+trigger1 = Time = 0
+value = ifelse(StateType = S, ifelse(var(20) = 0, 1120, 120), ifelse(StateType = A, 122, 121))
+
+[State 120, Guardia de pie]
+type = StateTypeSet
+trigger1 = Time = 0 && StateType = S
+trigger2 = StateType = C && command != "holddown"
+statetype = S
+physics = S
+
+[State 120, Guardia agachado]
+type = StateTypeSet
+trigger1 = Time = 0 && StateType = C
+trigger2 = StateType = S && command = "holddown"
+statetype = C
+physics = C
+
+[State 120, Guardia en el aire]
+type = StateTypeSet
+trigger1 = Time = 0 && StateType = A
+physics = A
+
+[State 120, Sostener la guardia]
+type = ChangeState
+trigger1 = AnimTime = 0
+value = ifelse(StateType = A, 132, ifelse(StateType = C, 131, 130))
+
+[State 120, Terminar la guardia]
+type = ChangeState
+trigger1 = command != "holdback" || !InGuardDist
+value = 140
+
+[Statedef 130]
+type = S
+physics = S
+
+[State 130, Sostener la pose del arma equipada]
+type = ChangeAnim
+trigger1 = Anim != ifelse(var(20) = 0, 1130, 130)
+value = ifelse(var(20) = 0, 1130, 130)
+
+[State 130, Pasar a guardia baja]
+type = ChangeState
+trigger1 = command = "holddown"
+value = 131
+
+[State 130, Terminar la guardia]
+type = ChangeState
+trigger1 = command != "holdback" || !InGuardDist
+value = 140
+
+[Statedef 140]
+type = U
+physics = U
+ctrl = 1
+
+[State 140, Animacion de guardia]
+type = ChangeAnim
+trigger1 = Time = 0
+value = ifelse(StateType = S, ifelse(var(20) = 0, 1140, 140), ifelse(StateType = A, 142, 141))
+
+[State 140, Guardia de pie]
+type = StateTypeSet
+trigger1 = Time = 0 && StateType = S
+trigger2 = StateType = C && command != "holddown"
+statetype = S
+physics = S
+
+[State 140, Guardia agachado]
+type = StateTypeSet
+trigger1 = Time = 0 && StateType = C
+trigger2 = StateType = S && command = "holddown"
+statetype = C
+physics = C
+
+[State 140, Guardia en el aire]
+type = StateTypeSet
+trigger1 = Time = 0 && StateType = A
+physics = A
+
+; El motor finaliza el estado 140 al terminar la animacion.
+
+; Impacto bloqueado de pie. Usar la pose de cobertura del modo actual.
+[Statedef 150]
+type = S
+movetype = H
+physics = N
+velset = 0,0
+
+[State 150, Cubrir el impacto]
+type = ChangeAnim
+trigger1 = Time = 0
+value = ifelse(var(20) = 0, 1130, 130)
+
+[State 150, Retroceso de guardia]
+type = ChangeState
+trigger1 = HitShakeOver
+value = ifelse(command = "holddown", 153, 151)
+
+[State 150, Bajar la guardia]
+type = StateTypeSet
+trigger1 = StateType = S && command = "holddown"
+statetype = C
+physics = C
+
+[State 150, Subir la guardia]
+type = StateTypeSet
+trigger1 = StateType = C && command != "holddown"
+statetype = S
+physics = S
+
+[State 150, Vibracion del bloqueo]
+type = ForceFeedback
+trigger1 = Time = 0
+waveform = square
+time = 3
+
+[Statedef 151]
+type = S
+movetype = H
+physics = S
+
+[State 151, Mantener la pose durante el retroceso]
+type = ChangeAnim
+trigger1 = Time = 0
+value = ifelse(var(20) = 0, 1130, 130)
+
+[State 151, Empuje del ataque bloqueado]
+type = HitVelSet
+trigger1 = Time = 0
+x = 1
+
+[State 151, Frenar]
+type = VelSet
+trigger1 = Time = GetHitVar(slidetime) || HitOver
+x = 0
+
+[State 151, Recuperar control]
+type = CtrlSet
+trigger1 = Time = GetHitVar(ctrltime)
+value = 1
+
+[State 151, Bajar la guardia]
+type = StateTypeSet
+trigger1 = StateType = S && command = "holddown"
+statetype = C
+physics = C
+
+[State 151, Subir la guardia]
+type = StateTypeSet
+trigger1 = StateType = C && command != "holddown"
+statetype = S
+physics = S
+
+[State 151, Volver a cubrirse]
+type = ChangeState
+trigger1 = HitOver
+value = 130
 ctrl = 1

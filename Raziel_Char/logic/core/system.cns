@@ -12,6 +12,7 @@
 ;   1 = Clavada
 ;   2 = Lanzada
 ;   3 = Caida
+;   4 = PERDIDA tras lanzar espada (Reaver; no se recupera hasta otro round)
 ;
 ; var(21) = Reaver activo
 ;   0 = Spectral
@@ -26,6 +27,7 @@
 ;
 ; var(22) = Carga de la espada
 ; var(24) = Pose de fin de round: 0 pendiente, 170/180 en curso, -1 terminada
+; var(25) = Accion de impacto en la cara (5000..5002), 0 fuera de la secuencia
 ;
 ;==============================================================================
 
@@ -90,6 +92,90 @@ value = 8
 ignorehitpause = 1
 
 
+;==============================================================================
+; ESPADA ATRAVESANDO A CUALQUIER RIVAL: EFECTOS CREADOS POR RAZIEL
+;==============================================================================
+; LA CORRECCION DE COMPATIBILIDAD:
+; Un Explod ejecutado por el rival dentro de State 6520 usa el AIR/SFF
+; del RIVAL, no el de Raziel; por eso no aparecia sobre Kung Fu Man.
+; Aqui Raziel crea SUS PROPIAS animaciones 6508/6509, ancladas a P2.
+;
+; SOLO SI EL PROJECTILE 6506 HA ACERTADO (NO SI FUE BLOQUEADO).
+; ProjHitTime(6506): ticks desde el ultimo acierto de ese proyectil;
+; -1 significa que no se produjo un hit. La ventana 0..15 permite
+; que P2 entre en el estado prestado antes de crear los efectos.
+;
+; PARA AJUSTAR MANUALMENTE EL EFECTO SOBRE EL RIVAL:
+; - pos = X,Y. X positivo: hacia delante del RIVAL; Y negativo: arriba.
+; - scale = ancho,alto. Ajustar por separado 6508 y 6509 si hace falta.
+; - facing = -1. Invertir el sentido con 1 cuando sea necesario.
+; - sprpriority: 6509 DETRAS, 6508 DELANTE. ontop=1 en 6508.
+; - El efecto sigue a P2 gracias a postype=p2 y bindtime=-1.
+;==============================================================================
+
+; 6509 = PARTE TRASERA (detras del cuerpo del rival).
+[State -2, Espada 6509 TRASERA sobre P2]
+type = Explod
+triggerall = !IsHelper
+triggerall = NumExplod(6509) = 0
+triggerall = ProjHitTime(6506) >= 0
+triggerall = ProjHitTime(6506) <= 15
+trigger1 = EnemyNear, StateNo = 6520
+ID = 6509
+anim = 6509
+postype = p2
+pos = -6,-69
+facing = -1
+bindtime = -1
+removetime = -1
+sprpriority = -5
+scale = 0.275,0.275
+ownpal = 1
+removeongethit = 0
+ignorehitpause = 1
+
+; 6508 = PARTE DELANTERA (por encima del cuerpo del rival).
+[State -2, Espada 6508 DELANTERA sobre P2]
+type = Explod
+triggerall = !IsHelper
+triggerall = NumExplod(6508) = 0
+triggerall = ProjHitTime(6506) >= 0
+triggerall = ProjHitTime(6506) <= 15
+trigger1 = EnemyNear, StateNo = 6520
+ID = 6508
+anim = 6508
+postype = p2
+pos = -6,-69
+facing = -1
+bindtime = -1
+removetime = -1
+sprpriority = 6
+ontop = 1
+scale = 0.275,0.275
+ownpal = 1
+removeongethit = 0
+ignorehitpause = 1
+
+; Al terminar o interrumpirse el stun, retirar la mitad DELANTERA.
+[State -2, Quitar espada 6508 si P2 sale del stun]
+type = RemoveExplod
+triggerall = !IsHelper
+triggerall = NumExplod(6508) > 0
+trigger1 = EnemyNear, StateNo != 6520
+trigger2 = RoundState = 0
+ID = 6508
+ignorehitpause = 1
+
+; Al terminar o interrumpirse el stun, retirar la mitad TRASERA.
+[State -2, Quitar espada 6509 si P2 sale del stun]
+type = RemoveExplod
+triggerall = !IsHelper
+triggerall = NumExplod(6509) > 0
+trigger1 = EnemyNear, StateNo != 6520
+trigger2 = RoundState = 0
+ID = 6509
+ignorehitpause = 1
+
 ;------------------------------------------------------------------------------
 ; INICIALIZACION
 ;------------------------------------------------------------------------------
@@ -103,6 +189,18 @@ v = 20
 value = 0
 ignorehitpause = 1
 
+
+; PERDIDA DEFINITIVA EN ESTE ROUND: si el proyectil 6506 impacta,
+; es bloqueado, cancelado o se consume por distancia, mantener Reaver.
+; Deliberadamente NO se vuelve a poner var(20)=0 durante el round.
+[State -2, Espada perdida tras finalizar el proyectil]
+type = VarSet
+triggerall = !IsHelper && var(20) = 2
+triggerall = RoundState >= 2
+trigger1 = NumProjID(6506) = 0
+v = 20
+value = 4
+ignorehitpause = 1
 
 [State -2, Reiniciar pose de resultado]
 type = VarSet
@@ -500,13 +598,13 @@ type = RemoveExplod
 ; Raziel vuelve a tener espada
 trigger1 = var(20) = 0
 
-; Cambió a otro Reaver
+; CambiÃ³ a otro Reaver
 trigger2 = var(21) != 0
 
 ; Ya no esta caminando
 trigger3 = StateNo != 20
 
-; Cambió a una paleta que no utiliza Spectral azul
+; CambiÃ³ a una paleta que no utiliza Spectral azul
 trigger4 = !(PalNo = 1 || PalNo = 3)
 
 ID = 7001
@@ -1030,6 +1128,53 @@ ignorehitpause = 1
 ;==============================================================================
 
 [Statedef -3]
+
+;==============================================================================
+; Golpe alto de pie. Los estados 5000 y 5001 manejan el impacto y el empuje.
+; Si el ataque da poco hitstun, el estado 0 deja terminar el gesto en reposo.
+; -3 solo actua cuando Raziel esta bajo su propio codigo de estados.
+;==============================================================================
+[State -3, Cerrar la secuencia al terminar o al cambiar de accion]
+type = VarSet
+triggerall = var(25) != 0
+trigger1 = StateNo != 5000 && StateNo != 5001 && (StateNo != 0 || PrevStateNo != 5001)
+trigger2 = StateNo = 5001 && PrevStateNo != 5000
+trigger3 = StateNo = 0 && Anim = var(25) + 5 && AnimTime = 0
+trigger4 = StateNo = 0 && Anim != 4999 && Anim != var(25) && Anim != var(25) + 5
+v = 25
+value = 0
+
+[State -3, Pasar de la incorporacion al impacto]
+type = ChangeAnim
+triggerall = var(25) != 0
+trigger1 = Anim = 4999 && AnimTime = 0
+value = var(25)
+
+; En un golpe largo, sostener el ultimo dibujo de impacto. Las recuperaciones
+; 5005, 5006 y 5007 de este AIR duran respectivamente 8, 10 y 12 ticks.
+[State -3, Mantener el impacto mientras sobra tiempo de golpe]
+type = ChangeAnim
+triggerall = var(25) != 0 && Anim = var(25) && AnimTime = -1
+triggerall = StateNo = 5000 || StateNo = 5001
+trigger1 = !HitShakeOver
+trigger2 = GetHitVar(hittime) > 8 + 2 * (var(25) - 5000)
+value = Anim
+elem = AnimElemNo(0)
+
+[State -3, Recuperar con la accion de la misma intensidad]
+type = ChangeAnim
+triggerall = var(25) != 0
+trigger1 = Anim = var(25) && AnimTime = 0
+value = var(25) + 5
+
+; common1 vuelve a seleccionar la recuperacion en cada AnimTime = 0 mientras
+; sigue en 5001. Si aun hay hitstun, sostener su ultimo dibujo hasta salir.
+[State -3, Conservar el ultimo dibujo de recuperacion]
+type = ChangeAnim
+triggerall = var(25) != 0 && Anim = var(25) + 5 && AnimTime = -1
+trigger1 = StateNo = 5000 || StateNo = 5001
+value = Anim
+elem = AnimElemNo(0)
 
 ; La entrada normal es 170 por tiempo o 180 -> 181 al ganar. Despues de un
 ; KO esperamos a que common1 inicialice 5150 y presentamos la derrota ahi.
